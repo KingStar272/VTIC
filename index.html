@@ -157,7 +157,7 @@
                                         <img :src="item.author.avatar" alt="People">
                                     </md-avatar>
                                     <div class="md-title">{{ item.author.name }}</div>
-                                    <div class="md-subhead" :title="item.date | toDate"><timeago :auto-update="1" :since="item.date"></timeago></div>
+                                    <div class="md-subhead" :title="item.date | toDate"><timeago :auto-update="60" :since="item.date"></timeago></div>
                                 </md-card-header>
                                 <md-card-content>
                                     {{ item.title }}
