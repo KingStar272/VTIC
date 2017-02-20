@@ -1,0 +1,66 @@
+.container{
+	max-width: 750px;
+	margin: 0 auto;
+}
+
+.container.extend{
+	max-width: 1200px;
+}
+
+.container.nav{
+	flex: 1;
+    display: flex;
+}
+.md-tabs-navigation {
+  	display: none;
+}
+
+.container.nav .md-title{
+	line-height: 40px;
+}
+#app #linear-loader{
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999;
+}
+
+#loginButton{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate3D(-50%,-50%,0);
+	width: 200px;
+	cursor: pointer;
+}
+
+
+#fullscreen-loader{
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	z-index: 999;
+	background-color: #fff;
+	transition: all .3s ease;
+}
+
+div#fullscreen-loader.hidden {
+    opacity: 0;
+}
+
+#fullscreen-loader .md-spinner{
+	position: absolute;
+	top: calc(50% - 75px);
+	left: calc(50% - 75px);
+	height: 150px;
+	width: 150px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
