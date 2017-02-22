@@ -1,9 +1,6 @@
 var config = {
     apiKey: "AIzaSyAXFI5WUUZPdvRg0PCBNX-Iriibqha5afU",
-    authDomain: "vtic-394e0.firebaseapp.com",
-    databaseURL: "https://vtic-394e0.firebaseio.com",
-    storageBucket: "vtic-394e0.appspot.com",
-    messagingSenderId: "141922412591"
+    databaseURL: "https://vtic-394e0.firebaseio.com"
 };
 firebase.initializeApp(config);
 
@@ -65,11 +62,13 @@ var App = new Vue({
                     'avatar': user.photoURL,
                     'uid': user.uid
                 };
-                this.snackBar.message = 'Logged in as ' + this.user.email;
+                this.snackBar.message = 'Iniciado la sesión como ' + this.user.email;
                 this.openSnackBar();
                 this.question.author = this.user;
 
                 console.log(user);
+
+                this.initialDate = Date.now();
             } else {
 
                 this.ifLogin = false;
@@ -80,6 +79,7 @@ var App = new Vue({
 
     },
     data: {
+        initialDate: null,
         ifLogin: false,
         loading: false,
         fullscreenLoading: true,
@@ -105,8 +105,8 @@ var App = new Vue({
         },
 
         snackBar: {
-            vertical: 'bottom',
-            horizontal: 'center',
+            vertical: 'top',
+            horizontal: 'right',
             duration: 4000,
             message: 'Nope'
         },
@@ -126,7 +126,6 @@ var App = new Vue({
         },
 
         questionList: []
-
     },
     watch: {
         levels: function () {
@@ -145,24 +144,35 @@ var App = new Vue({
         },
         currentTopic: function () {
             this.currentTopicName = this;
-            this.unbindDB();
-            this.bindDatabase();
+            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"))
         },
         title: function () {
             document.title = this.title
+        },
+        questionList: function(){
+            var latest = this.questionList[this.questionList.length - 1],
+                t = this;
+            if(latest == null) return;
+            if(latest.date > this.initialDate){
+                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + t.topics[t.currentLevel].name;
+                t.openSnackBar();
+            };
         }
     },
     methods: {
+        reverse: function(array){
+            return array.slice().reverse();
+        },
         addQuestion: function () {
 
             if ((this.currentLevel == null) || (this.currentTopic == null)) {
-                this.snackBar.message = 'Please pick a topic.';
+                this.snackBar.message = 'Por favor escoja un tema.';
                 this.openSnackBar();
                 return;
             };
 
             if (this.question.title == null) {
-                this.snackBar.message = 'Please add a title.';
+                this.snackBar.message = 'Por favor añade un título.';
                 this.openSnackBar();
                 return;
             };
@@ -171,20 +181,16 @@ var App = new Vue({
             var j = ['a', 'b', 'c', 'd'];
 
             for (var i = 0, len = j.length; i < len; i++) {
-                console.log(t.question.answers[j[i]], i);
                 if (t.question.answers[j[i]] == "" || t.question.answers[j[i]] == null) {
-                    t.snackBar.message = 'Please fill all inputs.';
+                    t.snackBar.message = 'Por favor rellena todos los campos.';
                     t.openSnackBar();
                     return;
                 };
             }
 
             this.loading = true;
-
-            var ref = firebase.database().ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/');
-
             this.question.date = Date.now();
-            ref.push(this.question).then(successCallback);;
+            this.$firebaseRefs.questionList.push(this.question).then(successCallback);
 
             function successCallback() {
                 t.question = {
@@ -198,25 +204,10 @@ var App = new Vue({
             };
 
         },
-        removeMessage: function (message) {
-            this.$firebaseRefs.messages.child(message['.key']).remove()
-        },
-        bindDatabase: function () {
-            var t = this;
-            var ref = firebase.database().ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/');
-            ref.on("child_added", function (snapshot, prevChildKey) {
-                t.questionList.unshift(snapshot.val())
-            });
-
-            ref.orderByChild('date').startAt(Date.now()).on('child_added', function (snapshot) {
-                t.snackBar.message = snapshot.val().author.name + ' acaba de publicar una pregunta nueva en el tema de ' + t.topics[t.currentLevel].name
-                t.openSnackBar();
-                t.loading = false;
-            });
-        },
-        unbindDB: function () {
-            firebase.database().ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').off();
-            this.questionList = [];
+        removeQuestion: function (question) {
+            this.$firebaseRefs.questionList.child(question['.key']).remove();
+            this.snackBar.message = 'La pregunta ha sido eliminada.';
+            this.openSnackBar();
         },
 
         changeRoute(tab) {
@@ -232,10 +223,6 @@ var App = new Vue({
 
             var provider = new firebase.auth.GoogleAuthProvider();
             provider.addScope('https://www.googleapis.com/auth/plus.login');
-            provider.setCustomParameters({
-                'login_hint': 'name@a.vedrunacarabanchel.es'
-            });
-
 
             firebase.auth().signInWithPopup(provider).then(function (result) {
                 t.loading = false;
@@ -259,7 +246,7 @@ var App = new Vue({
 
         logOut: function () {
             firebase.auth().signOut();
-            this.snackBar.message = 'You are not longer logged in.';
+            this.snackBar.message = 'Cerrado la sesión.';
             this.openSnackBar();
         },
 
@@ -280,6 +267,7 @@ var App = new Vue({
     }
 
 })
+
 Vue.filter('toDate', function (value) {
     var d = new Date(value),
         yyyy = d.getFullYear(),
@@ -306,3 +294,4 @@ Vue.filter('toDate', function (value) {
 
     return time;
 });
+
