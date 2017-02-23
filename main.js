@@ -154,12 +154,21 @@ var App = new Vue({
                 t = this;
             if(latest == null) return;
             if(latest.date > this.initialDate){
-                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + t.topics[t.currentLevel].name;
+                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + this.getTopicTitle(this.currentTopic);
                 t.openSnackBar();
             };
         }
     },
     methods: {
+        getTopicTitle: function(s){
+            var topics = this.topics;
+            for (topic in topics) {
+                var t = topics[topic];
+                if (t.slug == s) {
+                    return t.name;
+                }
+            }
+        },
         reverse: function(array){
             return array.slice().reverse();
         },
