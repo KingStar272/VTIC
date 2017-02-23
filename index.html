@@ -23,14 +23,15 @@
         <transition name="fade">
             <md-progress md-indeterminate class="md-accent" id="linear-loader" v-if="loading"></md-progress>
         </transition>
-        <md-dialog ref="logOut--confirm">
+        <md-dialog ref="confirm">
             <md-dialog-title>{{ confirm.title }}</md-dialog-title>
-            <md-dialog-content>{{ confirm.contentHtml }}</md-dialog-content>
+            <md-dialog-content v-html="confirm.contentHtml"></md-dialog-content>
             <md-dialog-actions>
-                <md-button class="md-primary md-raised" @click.native="closeDialog('logOut--confirm');logOut()">{{confirm.ok}}</md-button>
-                <md-button class="md-primary" @click.native="closeDialog('logOut--confirm')">{{confirm.cancel}}</md-button>
+                <md-button class="md-primary md-raised" @click.native="onConfirm(); closeDialog('confirm');">{{confirm.ok}}</md-button>
+                <md-button class="md-primary" @click.native="closeDialog('confirm')">{{confirm.cancel}}</md-button>
             </md-dialog-actions>
-        </md-dialog>
+        </md-dialog> 
+         
         <md-snackbar :md-position="snackBar.vertical + ' ' + snackBar.horizontal" ref="snackbar" :md-duration="snackBar.duration">
             <span>{{ snackBar.message }}</span>
         </md-snackbar>
@@ -44,7 +45,7 @@
                                 <md-tooltip md-direction="bottom">{{ user.name }}</md-tooltip>
                             </md-avatar>
                             <md-menu-content>
-                                <md-menu-item @click.native="openDialog('logOut--confirm')">Cerrar sesión</md-menu-item>
+                                <md-menu-item @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">Cerrar sesión</md-menu-item>
                             </md-menu-content>
                         </md-menu>
                     </div>

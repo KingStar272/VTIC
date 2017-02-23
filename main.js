@@ -98,12 +98,14 @@ var App = new Vue({
         currentTopic: null,
         currentTopicName: null,
 
-        confirm: {
+        logOutconfirm: {
             title: 'Cerrar la sesión?',
             contentHtml: 'Ya quieres ir?',
             ok: 'Yep',
             cancel: 'Nope'
         },
+
+        confirm:{},
 
         snackBar: {
             vertical: 'top',
@@ -215,9 +217,21 @@ var App = new Vue({
 
         },
         removeQuestion: function (question) {
-            this.$firebaseRefs.questionList.child(question['.key']).remove();
-            this.snackBar.message = 'La pregunta ha sido eliminada.';
-            this.openSnackBar();
+            this.confirm = {
+                title: 'Confirmar',
+                contentHtml: 'Eliminar la pregunta <strong>' + question.title + '</strong> ?',
+                ok: 'Yep',
+                cancel: 'Nope'
+            };
+            
+            this.onConfirm = function(){
+                this.$firebaseRefs.questionList.child(question['.key']).remove();
+                this.snackBar.message = 'La pregunta ha sido eliminada.';
+                this.openSnackBar();
+            };
+
+            this.openDialog('confirm')
+
         },
 
         changeRoute(tab) {
@@ -265,6 +279,9 @@ var App = new Vue({
         },
         closeDialog(ref) {
             this.$refs[ref].close();
+        },
+        onConfirm: function(){
+            this.logOut();
         },
         openSnackBar: function (msg) {
             this.$refs.snackbar.open();
