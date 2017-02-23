@@ -1,5 +1,6 @@
 var config = {
     apiKey: "AIzaSyAXFI5WUUZPdvRg0PCBNX-Iriibqha5afU",
+    authDomain: "vtic-394e0.firebaseapp.com",
     databaseURL: "https://vtic-394e0.firebaseio.com"
 };
 firebase.initializeApp(config);
