@@ -195,7 +195,7 @@ var App = new Vue({
         exitTest: function () {
             this.exam = {
                 inProgress: false,
-                result: fasle,
+                result: false,
                 grade: 0,
                 correct: [],
                 wrong: []
