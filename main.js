@@ -86,7 +86,7 @@ var App = new Vue({
         fullscreenLoading: true,
 
         title: 'Enviar preguntas',
-        titles: ['Enviar preguntas', 'Ver preguntas'],
+        titles: ['Enviar preguntas', 'Ver preguntas', 'Examinar'],
 
         user: {},
         messages: [],
@@ -105,7 +105,7 @@ var App = new Vue({
             cancel: 'Nope'
         },
 
-        confirm:{},
+        confirm: {},
 
         snackBar: {
             vertical: 'top',
@@ -128,7 +128,16 @@ var App = new Vue({
             }
         },
 
-        questionList: []
+        questionList: [],
+
+        questionListShuffled: [],
+
+        exam: {
+            inProgress: false,
+            grade: 0,
+            correct: [],
+            wrong: []
+        }
     },
     watch: {
         levels: function () {
@@ -152,18 +161,71 @@ var App = new Vue({
         title: function () {
             document.title = this.title
         },
-        questionList: function(){
+        questionList: function () {
             var latest = this.questionList[this.questionList.length - 1],
                 t = this;
-            if(latest == null) return;
-            if(latest.date > this.initialDate){
+            if (latest == null) return;
+            if (latest.date > this.initialDate) {
                 t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + this.getTopicTitle(this.currentTopic);
                 t.openSnackBar();
             };
         }
     },
+    computed: {
+
+    },
     methods: {
-        getTopicTitle: function(s){
+        getQuestionByKey: function (k,array) {
+            return array.filter(function (obj) {
+                return obj['.key'] == k;
+            });
+        },
+        exitTest: function(){
+            this.exam = {
+                inProgress: false,
+                grade: 0,
+                correct: [],
+                wrong: []
+            };
+            this.questionListShuffled = [];
+        },
+        checkAnswers: function () {
+            var t = this;
+            this.questionListShuffled.forEach(function (entry) {
+                if (entry.choosen == entry.correctAnswer) {
+                    t.exam.correct.push(entry['.key']);
+                } else {
+                    t.exam.wrong.push(entry['.key']);
+                }
+            });
+
+            t.exam.grade = (t.exam.correct.length / t.questionListShuffled.length) * 10;
+
+            t.exam.inProgress = false;
+
+            window.scrollTo(0,0);
+        },
+        shuffleQuestion: function () {
+            var questionListShuffled = this.questionList;
+            this.exam = {
+                inProgress: true,
+                grade: 0,
+                correct: [],
+                wrong: []
+            };
+
+            questionListShuffled.sort(function () {
+                return 0.5 - Math.random()
+            });
+
+            this.questionListShuffled = questionListShuffled.map(function (el) {
+                var o = Object.assign({}, el);
+                o.choosen = 'a';
+                return o;
+            }).slice(0, 10);
+
+        },
+        getTopicTitle: function (s) {
             var topics = this.topics;
             for (topic in topics) {
                 var t = topics[topic];
@@ -172,7 +234,7 @@ var App = new Vue({
                 }
             }
         },
-        reverse: function(array){
+        reverse: function (array) {
             return array.slice().reverse();
         },
         addQuestion: function () {
@@ -223,8 +285,8 @@ var App = new Vue({
                 ok: 'Yep',
                 cancel: 'Nope'
             };
-            
-            this.onConfirm = function(){
+
+            this.onConfirm = function () {
                 this.$firebaseRefs.questionList.child(question['.key']).remove();
                 this.snackBar.message = 'La pregunta ha sido eliminada.';
                 this.openSnackBar();
@@ -280,7 +342,7 @@ var App = new Vue({
         closeDialog(ref) {
             this.$refs[ref].close();
         },
-        onConfirm: function(){
+        onConfirm: function () {
             this.logOut();
         },
         openSnackBar: function (msg) {
@@ -321,4 +383,3 @@ Vue.filter('toDate', function (value) {
 
     return time;
 });
-

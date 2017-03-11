@@ -30,8 +30,8 @@
                 <md-button class="md-primary md-raised" @click.native="onConfirm(); closeDialog('confirm');">{{confirm.ok}}</md-button>
                 <md-button class="md-primary" @click.native="closeDialog('confirm')">{{confirm.cancel}}</md-button>
             </md-dialog-actions>
-        </md-dialog> 
-         
+        </md-dialog>
+
         <md-snackbar :md-position="snackBar.vertical + ' ' + snackBar.horizontal" ref="snackbar" :md-duration="snackBar.duration">
             <span>{{ snackBar.message }}</span>
         </md-snackbar>
@@ -118,68 +118,119 @@
                                         <md-radio v-model="question.correctAnswer" md-value="d">D</md-radio>
                                     </md-layout>
                                 </md-layout>
-                                <md-button style="margin-left: 0;" class="md-raised md-primary" @click.native="addQuestion()">
+                                <md-button style="margin-left: 0;" class="md-raised md-primary" @click.native="addQuestion()" type="submit">
                                     <md-icon>send</md-icon> Enviar</md-button>
                             </form>
                         </div>
                     </md-tab>
                     <md-tab id="checkQuestion" md-icon="check_circle">
                         <div class="container">
-                            <md-layout md-row :md-gutter="40">
-                                <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                    <md-input-container>
-                                        <label for="currentLevel">Curso</label>
-                                        <md-select v-model="currentLevel">
-                                            <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
-                                        </md-select>
-                                    </md-input-container>
+                            <div v-if="!exam.inProgress">
+                                <md-layout md-row :md-gutter="40">
+                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                                        <md-input-container>
+                                            <label for="currentLevel">Curso</label>
+                                            <md-select v-model="currentLevel">
+                                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </md-layout>
+                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                                        <md-input-container>
+                                            <label for="currentLevel">Tema</label>
+                                            <md-select name="currentTopic" v-model="currentTopic">
+                                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </md-layout>
                                 </md-layout>
-                                <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                    <md-input-container>
-                                        <label for="currentLevel">Tema</label>
-                                        <md-select name="currentTopic" v-model="currentTopic">
-                                            <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
-                                        </md-select>
-                                    </md-input-container>
-                                </md-layout>
-                            </md-layout>
-                            <md-card class="md-primary" v-if="!questionList.length && currentTopic !== null">
-                                <md-card-header>
-                                    <div class="md-title">No hay preguntas bajo este tema.</div>
-                                </md-card-header>
-                                <md-card-actions>
-                                    <md-button @click.native="switchTab(0)">Crear una ahora</md-button>
-                                </md-card-actions>
-                            </md-card>
-                            <md-card style="margin-bottom: 1em;" v-for="(item, index) in reverse(questionList)">
-                                <md-card-header>
-                                    <md-avatar>
-                                        <img :src="item.author.avatar" alt="People">
-                                    </md-avatar>
-                                    <div class="md-title">{{ item.author.name }}</div>
-                                    <div class="md-subhead" :title="item.date | toDate">
-                                        <timeago :auto-update="60" :since="item.date"></timeago>
-                                    </div>
-                                </md-card-header>
+                                <md-card class="md-primary" v-if="!questionList.length && currentTopic !== null">
+                                    <md-card-header>
+                                        <div class="md-title">No hay preguntas bajo este tema.</div>
+                                    </md-card-header>
+                                    <md-card-actions>
+                                        <md-button @click.native="switchTab(0)">Crear una ahora</md-button>
+                                    </md-card-actions>
+                                </md-card>
+                                <md-card style="margin-bottom: 1em;" v-for="(item, index) in reverse(questionList)">
+                                    <md-card-header>
+                                        <md-avatar>
+                                            <img :src="item.author.avatar" alt="People">
+                                        </md-avatar>
+                                        <div class="md-title">{{ item.author.name }}</div>
+                                        <div class="md-subhead" :title="item.date | toDate">
+                                            <timeago :auto-update="60" :since="item.date"></timeago>
+                                        </div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        {{ item.title }} {{item.id}}
+                                        <md-list>
+
+                                            <md-list-item v-for="(value, letter, index) in item.answers" :key="item.id">
+                                                <div class="md-list-text-container">
+                                                    {{letter.toUpperCase()}}. {{value}}
+                                                </div>
+                                                <md-button v-if="item.correctAnswer == letter" class="md-icon-button md-list-action">
+                                                    <md-icon class="md-primary">star</md-icon>
+                                                    <md-tooltip md-direction="bottom">Respuesta Correcta</md-tooltip>
+                                                </md-button>
+                                                <md-divider v-if="letter !== 'd'"></md-divider>
+                                            </md-list-item>
+                                        </md-list>
+                                        <md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author.uid == user.uid">Eliminar</md-button>
+
+                                    </md-card-content>
+                                </md-card>
+                            </div>
+                            <div v-else>
+                                <md-card class="md-primary">
+                                    <md-card-header>
+                                        <div class="md-title">Nope.</div>
+                                    </md-card-header>
+                                </md-card>
+                            </div>
+                        </div>
+                    </md-tab>
+                    <md-tab id="doTest" md-icon="assignment">
+                        <div class="container">
+                            <md-button @click.native="shuffleQuestion()" class="md-raised md-accent" v-if="questionList.length && !exam.grade && !questionListShuffled.length">Comenzar</md-button>
+                            <md-card v-if="!exam.grade" style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled">
                                 <md-card-content>
-                                    {{ item.title }} {{item.id}}
+                                    {{ item.title }}
                                     <md-list>
 
-                                        <md-list-item v-for="(value, letter, index) in item.answers" :key="item.id">
-                                            <div class="md-list-text-container">
-                                                {{letter.toUpperCase()}}. {{value}}
-                                            </div>
-                                            <md-button v-if="item.correctAnswer == letter" class="md-icon-button md-list-action">
-                                                <md-icon class="md-primary">star</md-icon>
-                                                <md-tooltip md-direction="bottom">Respuesta Correcta</md-tooltip>
-                                            </md-button>
-                                            <md-divider v-if="letter !== 'd'"></md-divider>
+                                        <md-list-item>
+                                            <md-layout md-column md-theme="default">
+                                                <md-layout v-for="(value, letter, index) in item.answers">
+                                                    <md-radio v-bind:md-value="letter" v-model="item.choosen">{{ letter.toUpperCase() }}. {{value}}</md-radio>
+                                                </md-layout>
+                                            </md-layout>
                                         </md-list-item>
-                                    </md-list>
-                                    <md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author.uid == user.uid">Eliminar</md-button>
 
+                                    </md-list>
                                 </md-card-content>
                             </md-card>
+                            <md-button @click.native="checkAnswers()" class="md-raised md-primary" v-if="questionListShuffled.length && !exam.grade">Comprobar</md-button>
+                            <div v-if="exam.grade">
+                                <md-card>
+                                    <md-card-header>
+                                        <div class="md-title">Nota: {{exam.grade.toPrecision(2)}}<br> Has tenido mal siguientes preguntas:</div>
+                                    </md-card-header>
+                                </md-card>
+                                <md-card v-for="value in exam.wrong">
+                                    <div v-for="item in getQuestionByKey(value,questionListShuffled)">
+                                        <md-card-header>
+                                            <div class="md-title">{{ item.title }}</div>
+                                        </md-card-header>
+
+                                        <md-card-content>
+                                            <p>Elejiste la opcion <strong>{{ item.choosen.toUpperCase() }}. {{item.answers[item.choosen]}}</strong></p>
+                                            <p>La correcta era <strong>{{item.correctAnswer.toUpperCase()}}. {{item.answers[item.correctAnswer]}}</strong></p>
+                                        </md-card-content>
+                                    </div>
+                                </md-card>
+                            </div>
+                            <md-button @click.native="exitTest()" class="md-raised md-primary" v-if="exam.grade">Terminar</md-button>
                         </div>
                     </md-tab>
                 </md-tabs>
@@ -192,12 +243,12 @@
             </div>
         </transition>
     </div>
-    <script src="https://unpkg.com/vue/dist/vue.js "></script>
-    <script src="https://gstatic.com/firebasejs/3.6.9/firebase.js "></script>
-    <script src="https://unpkg.com/vuefire/dist/vuefire.js "></script>
-    <script src="https://unpkg.com/vue-material@0.7.1 "></script>
-    <script src="https://unpkg.com/vue-timeago@3.2.0/dist/vue-timeago.js "></script>
-    <script src="main.js "></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://gstatic.com/firebasejs/3.6.9/firebase.js"></script>
+    <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+    <script src="https://unpkg.com/vue-material@0.7.1"></script>
+    <script src="https://unpkg.com/vue-timeago@3.2.0/dist/vue-timeago.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
