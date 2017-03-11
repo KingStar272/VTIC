@@ -193,74 +193,72 @@
                     </md-tab>
                     <md-tab id="doTest" md-icon="assignment">
                         <div class="container">
-                            <transition name="fade">
-                                <div v-if="!exam.grade && !questionListShuffled.length">
-                                    <md-layout md-row :md-gutter="40">
-                                        <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                            <md-input-container>
-                                                <label for="currentLevel">Curso</label>
-                                                <md-select v-model="currentLevel">
-                                                    <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
-                                                </md-select>
-                                            </md-input-container>
-                                        </md-layout>
-                                        <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                            <md-input-container>
-                                                <label for="currentLevel">Tema</label>
-                                                <md-select name="currentTopic" v-model="currentTopic">
-                                                    <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
-                                                </md-select>
-                                            </md-input-container>
-                                        </md-layout>
+                            <div v-if="!exam.grade && !questionListShuffled.length">
+                                <md-layout md-row :md-gutter="40">
+                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                                        <md-input-container>
+                                            <label for="currentLevel">Curso</label>
+                                            <md-select v-model="currentLevel">
+                                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
                                     </md-layout>
-                                    <md-card class="md-accent" v-if="!questionList.length && currentTopic !== null">
-                                        <md-card-header>
-                                            <div class="md-title">No hay preguntas bajo este tema, elegir un tema con preguntas para poder comenzar
-                                                el examen.</div>
-                                        </md-card-header>
-                                    </md-card>
-                                    <md-button @click.native="shuffleQuestion()" class="md-raised md-accent fullWidth" v-else>Comenzar</md-button>
-                                </div>
-                                <md-card v-if="!exam.grade" style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled">
-                                    <md-card-content>
-                                        {{ item.title }}
-                                        <md-list>
-
-                                            <md-list-item>
-                                                <md-layout md-column md-theme="default">
-                                                    <md-layout v-for="(value, letter, index) in item.answers">
-                                                        <md-radio v-bind:md-value="letter" v-model="item.choosen">{{ letter.toUpperCase() }}. {{value}}</md-radio>
-                                                    </md-layout>
-                                                </md-layout>
-                                            </md-list-item>
-
-                                        </md-list>
-                                    </md-card-content>
+                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                                        <md-input-container>
+                                            <label for="currentLevel">Tema</label>
+                                            <md-select name="currentTopic" v-model="currentTopic">
+                                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </md-layout>
+                                </md-layout>
+                                <md-card class="md-accent" v-if="!questionList.length && currentTopic !== null">
+                                    <md-card-header>
+                                        <div class="md-title">No hay preguntas bajo este tema, elegir un tema con preguntas para poder comenzar
+                                            el examen.</div>
+                                    </md-card-header>
                                 </md-card>
-                                <md-button @click.native="checkAnswers()" class="md-raised md-primary fullWidth" v-if="questionListShuffled.length && !exam.grade">Comprobar</md-button>
-                                <div v-if="exam.grade">
-                                    <md-card v-bind:class="examCardClass">
-                                        <md-card-header>
-                                            <div class="md-title">Nota: {{exam.grade.toPrecision(2)}}</div>
-                                            <div class="md-subhead" v-if="exam.wrong.length">Has tenido mal siguientes preguntas:</div>
-                                            <div class="md-subhead" v-else>Enhorabuena!</div>
-                                        </md-card-header>
-                                    </md-card>
-                                    <md-card v-for="value in exam.wrong">
-                                        <div v-for="item in getQuestionByKey(value,questionListShuffled)">
-                                            <md-card-header>
-                                                <div class="md-title">{{ item.title }}</div>
-                                            </md-card-header>
+                                <md-button @click.native="shuffleQuestion()" class="md-raised md-accent fullWidth" v-else>Comenzar</md-button>
+                            </div>
+                            <md-card v-if="!exam.grade" style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled">
+                                <md-card-content>
+                                    {{ item.title }}
+                                    <md-list>
 
-                                            <md-card-content>
-                                                <p>Elegiste la opcion <strong>{{ item.choosen.toUpperCase() }}. {{item.answers[item.choosen]}}</strong></p>
-                                                <p>La correcta era <strong>{{item.correctAnswer.toUpperCase()}}. {{item.answers[item.correctAnswer]}}</strong></p>
-                                            </md-card-content>
-                                        </div>
-                                    </md-card>
-                                </div>
-                                <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth" v-if="exam.grade">Terminar</md-button>
-                            </transition>
+                                        <md-list-item>
+                                            <md-layout md-column md-theme="default">
+                                                <md-layout v-for="(value, letter, index) in item.answers">
+                                                    <md-radio v-bind:md-value="letter" v-model="item.choosen">{{ letter.toUpperCase() }}. {{value}}</md-radio>
+                                                </md-layout>
+                                            </md-layout>
+                                        </md-list-item>
+
+                                    </md-list>
+                                </md-card-content>
+                            </md-card>
+                            <md-button @click.native="checkAnswers()" class="md-raised md-primary fullWidth" v-if="questionListShuffled.length && !exam.grade">Comprobar</md-button>
+                            <div v-if="exam.grade">
+                                <md-card v-bind:class="examCardClass">
+                                    <md-card-header>
+                                        <div class="md-title">Nota: {{exam.grade.toPrecision(2)}}</div>
+                                        <div class="md-subhead" v-if="exam.wrong.length">Has tenido mal siguientes preguntas:</div>
+                                        <div class="md-subhead" v-else>Enhorabuena!</div>
+                                    </md-card-header>
+                                </md-card>
+                                <md-card v-for="value in exam.wrong">
+                                    <div v-for="item in getQuestionByKey(value,questionListShuffled)">
+                                        <md-card-header>
+                                            <div class="md-title">{{ item.title }}</div>
+                                        </md-card-header>
+
+                                        <md-card-content>
+                                            <p>Elegiste la opcion <strong>{{ item.choosen.toUpperCase() }}. {{item.answers[item.choosen]}}</strong></p>
+                                            <p>La correcta era <strong>{{item.correctAnswer.toUpperCase()}}. {{item.answers[item.correctAnswer]}}</strong></p>
+                                        </md-card-content>
+                                    </div>
+                                </md-card>
+                            </div>
+                            <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth" v-if="exam.grade">Terminar</md-button>
                         </div>
                     </md-tab>
                 </md-tabs>
