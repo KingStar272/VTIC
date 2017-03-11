@@ -94,9 +94,10 @@ var App = new Vue({
         topics: [],
 
         currentLevel: null,
-
         currentTopic: null,
+
         currentTopicName: null,
+        currentLevelName: null,
 
         logOutconfirm: {
             title: 'Cerrar la sesión?',
@@ -134,6 +135,7 @@ var App = new Vue({
 
         exam: {
             inProgress: false,
+            result: false,
             grade: 0,
             correct: [],
             wrong: []
@@ -146,7 +148,6 @@ var App = new Vue({
                 this.currentTopic = this.levels[0].topics[0].slug;
                 this.fullscreenLoading = false;
                 document.title = this.titles[0];
-                this.openDialog('settings');
             }
 
         },
@@ -154,9 +155,13 @@ var App = new Vue({
             this.loading = true;
             this.topics = this.levels[this.currentLevel].topics
             this.loading = false;
+            this.currentLevelName = this.levels[this.currentLevel].name;
         },
         currentTopic: function () {
-            this.currentTopicName = this;
+            var t = this;
+            this.currentTopicName = this.topics.filter(function (obj) {
+                return obj.slug == t.currentTopic;
+            })[0].name;
             this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"))
         },
         title: function () {
@@ -167,7 +172,7 @@ var App = new Vue({
                 t = this;
             if (latest == null) return;
             if (latest.date > this.initialDate) {
-                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + this.getCurrentTopiName(this.currentTopic);
+                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + t.currentTopicName;
                 t.openSnackBar();
             };
         }
@@ -190,6 +195,7 @@ var App = new Vue({
         exitTest: function () {
             this.exam = {
                 inProgress: false,
+                result: fasle,
                 grade: 0,
                 correct: [],
                 wrong: []
@@ -198,7 +204,14 @@ var App = new Vue({
         },
         checkAnswers: function () {
             var t = this;
-            this.questionListShuffled.forEach(function (entry) {
+            this.exam = {
+                inProgress: false,
+                result: true,
+                grade: 0,
+                correct: [],
+                wrong: []
+            };
+            t.questionListShuffled.forEach(function (entry) {
                 if (entry.choosen == entry.correctAnswer) {
                     t.exam.correct.push(entry['.key']);
                 } else {
@@ -208,14 +221,13 @@ var App = new Vue({
 
             t.exam.grade = (t.exam.correct.length / t.questionListShuffled.length) * 10;
 
-            t.exam.inProgress = false;
-
             window.scrollTo(0, 0);
         },
         shuffleQuestion: function () {
             var questionListShuffled = this.questionList;
             this.exam = {
                 inProgress: true,
+                result: false,
                 grade: 0,
                 correct: [],
                 wrong: []
@@ -230,13 +242,6 @@ var App = new Vue({
                 o.choosen = 'a';
                 return o;
             }).slice(0, 10);
-        },
-        getCurrentTopiName: function (s) {
-
-            return this.topics.filter(function (obj) {
-                return obj.slug == s;
-            })[0].name;
-
         },
         reverse: function (array) {
             return array.slice().reverse();
