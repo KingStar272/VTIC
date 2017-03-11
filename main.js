@@ -146,6 +146,7 @@ var App = new Vue({
                 this.currentTopic = this.levels[0].topics[0].slug;
                 this.fullscreenLoading = false;
                 document.title = this.titles[0];
+                this.openDialog('settings');
             }
 
         },
@@ -166,7 +167,7 @@ var App = new Vue({
                 t = this;
             if (latest == null) return;
             if (latest.date > this.initialDate) {
-                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + this.getTopicTitle(this.currentTopic);
+                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + this.getCurrentTopiName(this.currentTopic);
                 t.openSnackBar();
             };
         }
@@ -230,14 +231,12 @@ var App = new Vue({
                 return o;
             }).slice(0, 10);
         },
-        getTopicTitle: function (s) {
-            var topics = this.topics;
-            for (topic in topics) {
-                var t = topics[topic];
-                if (t.slug == s) {
-                    return t.name;
-                }
-            }
+        getCurrentTopiName: function (s) {
+
+            return this.topics.filter(function (obj) {
+                return obj.slug == s;
+            })[0].name;
+
         },
         reverse: function (array) {
             return array.slice().reverse();

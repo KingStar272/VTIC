@@ -23,6 +23,7 @@
         <transition name="fade">
             <md-progress md-indeterminate class="md-accent" id="linear-loader" v-if="loading"></md-progress>
         </transition>
+
         <md-dialog ref="confirm">
             <md-dialog-title>{{ confirm.title }}</md-dialog-title>
             <md-dialog-content v-html="confirm.contentHtml"></md-dialog-content>
@@ -32,11 +33,45 @@
             </md-dialog-actions>
         </md-dialog>
 
+        <md-dialog md-open-from="#settings" md-close-to="#settings" ref="settings">
+            <md-dialog-title>Elige el curso y el tema</md-dialog-title>
+
+            <md-dialog-content>
+                <md-layout md-row :md-gutter="40">
+                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                        <md-input-container>
+                            <label for="currentLevel">Curso</label>
+                            <md-select v-model="currentLevel">
+                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-layout>
+                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
+                        <md-input-container>
+                            <label for="currentLevel">Tema</label>
+                            <md-select name="currentTopic" v-model="currentTopic">
+                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-layout>
+                </md-layout>
+
+            </md-dialog-content>
+
+            <md-dialog-actions>
+                <md-button class="md-primary" @click.native="closeDialog('settings')">Ok</md-button>
+            </md-dialog-actions>
+        </md-dialog>
+
         <md-snackbar :md-position="snackBar.vertical + ' ' + snackBar.horizontal" ref="snackbar" :md-duration="snackBar.duration">
             <span>{{ snackBar.message }}</span>
         </md-snackbar>
         <transition name="fade">
             <div v-if="ifLogin">
+                <md-button class="md-fab md-raised md-primary md-fab-bottom-right" id="settings" @click.native="openDialog('settings')" style="position: fixed">
+                    <md-icon>settings</md-icon>
+                </md-button>
+
                 <md-toolbar class="md-primary md-medium" md-centered>
                     <div class="container nav">
                         <md-menu style="margin: 0 auto;">
@@ -54,24 +89,6 @@
                     <md-tab id="submitQuestion" md-icon="send">
                         <div class="container">
                             <form validate @submit.stop.prevent="submit">
-                                <md-layout md-row :md-gutter="40">
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Curso</label>
-                                            <md-select v-model="currentLevel">
-                                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Tema</label>
-                                            <md-select name="currentTopic" v-model="currentTopic">
-                                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                </md-layout>
                                 <md-input-container>
                                     <label>Pregunta</label>
                                     <md-input v-model="question.title" :required="true"></md-input>
@@ -118,38 +135,22 @@
                                         <md-radio v-model="question.correctAnswer" md-value="d">D</md-radio>
                                     </md-layout>
                                 </md-layout>
-                                <md-button style="margin-left: 0;" class="md-raised md-primary" @click.native="addQuestion()" type="submit">
-                                    <md-icon>send</md-icon> Enviar</md-button>
+                                <md-button class="md-raised md-primary fullWidth" @click.native="addQuestion()" type="submit">
+                                    Enviar al tema de {{ getCurrentTopiName(currentTopic) }}
+                                </md-button>
                             </form>
                         </div>
                     </md-tab>
-                    <md-tab id="checkQuestion" md-icon="check_circle">
+                    <md-tab id="checkQuestion" md-icon="view_list">
                         <div class="container">
                             <div v-if="!exam.inProgress">
-                                <md-layout md-row :md-gutter="40">
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Curso</label>
-                                            <md-select v-model="currentLevel">
-                                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Tema</label>
-                                            <md-select name="currentTopic" v-model="currentTopic">
-                                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                </md-layout>
                                 <md-card class="md-primary" v-if="!questionList.length && currentTopic !== null">
                                     <md-card-header>
-                                        <div class="md-title">No hay preguntas bajo este tema.</div>
+                                        <div class="md-title">No hay preguntas bajo el tema de {{ getCurrentTopiName(currentTopic) }}.</div>
                                     </md-card-header>
                                     <md-card-actions>
                                         <md-button @click.native="switchTab(0)">Crear una ahora</md-button>
+                                        <md-button @click.native="openDialog('settings')">Camiar el tema</md-button>
                                     </md-card-actions>
                                 </md-card>
                                 <md-card style="margin-bottom: 1em;" v-for="(item, index) in reverse(questionList)">
@@ -194,29 +195,16 @@
                     <md-tab id="doTest" md-icon="assignment">
                         <div class="container">
                             <div v-if="!exam.grade && !questionListShuffled.length">
-                                <md-layout md-row :md-gutter="40">
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Curso</label>
-                                            <md-select v-model="currentLevel">
-                                                <md-option v-for="(item, index) in levels" v-bind:value="index">{{item.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                    <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                                        <md-input-container>
-                                            <label for="currentLevel">Tema</label>
-                                            <md-select name="currentTopic" v-model="currentTopic">
-                                                <md-option v-for="element in topics" v-bind:value="element.slug">{{element.name}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                    </md-layout>
-                                </md-layout>
                                 <md-card class="md-accent" v-if="!questionList.length && currentTopic !== null">
                                     <md-card-header>
-                                        <div class="md-title">No hay preguntas bajo este tema, elegir un tema con preguntas para poder comenzar
-                                            el examen.</div>
+                                        <div class="md-title">No hay preguntas bajo el tema de {{ getCurrentTopiName(currentTopic) }}</div>
                                     </md-card-header>
+                                    <md-card-content>
+                                        Elegir un tema con preguntas para poder comenzar el examen.
+                                    </md-card-content>
+                                    <md-card-actions>
+                                        <md-button @click.native="openDialog('settings')">Camiar el tema</md-button>
+                                    </md-card-actions>
                                 </md-card>
                                 <md-button @click.native="shuffleQuestion()" class="md-raised md-accent fullWidth" v-else>Comenzar</md-button>
                             </div>
@@ -241,7 +229,7 @@
                                 <md-card v-bind:class="examCardClass">
                                     <md-card-header>
                                         <div class="md-title">Nota: {{exam.grade.toPrecision(2)}}</div>
-                                        <div class="md-subhead" v-if="exam.wrong.length">Has tenido mal siguientes preguntas:</div>
+                                        <div class="md-subhead" v-if="exam.wrong.length">Has tenido mal las siguientes preguntas:</div>
                                         <div class="md-subhead" v-else>Enhorabuena!</div>
                                     </md-card-header>
                                 </md-card>
