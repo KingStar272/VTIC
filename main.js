@@ -172,15 +172,21 @@ var App = new Vue({
         }
     },
     computed: {
-
+        examCardClass: function () {
+            return {
+                'md-primary': this.exam.grade > 8 ,
+                'md-accent': this.exam.grade > 5 && this.exam.grade < 8,
+                'md-warn': this.exam.grade < 5
+            }
+        }
     },
     methods: {
-        getQuestionByKey: function (k,array) {
+        getQuestionByKey: function (k, array) {
             return array.filter(function (obj) {
                 return obj['.key'] == k;
             });
         },
-        exitTest: function(){
+        exitTest: function () {
             this.exam = {
                 inProgress: false,
                 grade: 0,
@@ -203,7 +209,7 @@ var App = new Vue({
 
             t.exam.inProgress = false;
 
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         },
         shuffleQuestion: function () {
             var questionListShuffled = this.questionList;
@@ -223,7 +229,6 @@ var App = new Vue({
                 o.choosen = 'a';
                 return o;
             }).slice(0, 10);
-
         },
         getTopicTitle: function (s) {
             var topics = this.topics;

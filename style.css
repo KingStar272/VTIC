@@ -64,3 +64,9 @@ div#fullscreen-loader.hidden {
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+
+button.fullWidth{
+	width: 100%;
+    margin-left: 0;
+	margin-right: 0;
+}
