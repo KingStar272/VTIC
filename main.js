@@ -204,7 +204,7 @@ var App = new Vue({
     methods: {
         objectToArray: function (obj) {
             if (obj) {
-                return Object.values(obj);
+                return Object.keys(obj).map(key => obj[key]);
             }
         },
         getQuestionByKey: function (k, array) {
