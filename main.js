@@ -63,6 +63,10 @@ var App = new Vue({
                     'avatar': user.photoURL,
                     'uid': user.uid
                 };
+
+                firebase.database().ref('users/' + this.user.uid + '/').set(this.user);
+                this.$bindAsArray('exams', db.ref('users/' + this.user.uid + '/exams/'));
+
                 this.snackBar.message = 'Iniciado la sesión como ' + this.user.email;
                 this.openSnackBar();
                 this.question.author = this.user;
@@ -134,13 +138,17 @@ var App = new Vue({
         questionListShuffled: [],
 
         exam: {
-            inProgress: false,
-            result: false,
             grade: 0,
             correct: [],
             wrong: []
+        },
+
+        examStatus:{
+            inProgress: false,
+            result: false
         }
     },
+
     watch: {
         levels: function () {
             if (this.levels.length !== 0) {
@@ -180,7 +188,7 @@ var App = new Vue({
     computed: {
         examCardClass: function () {
             return {
-                'md-primary': this.exam.grade > 8 ,
+                'md-primary': this.exam.grade >= 8,
                 'md-accent': this.exam.grade > 5 && this.exam.grade < 8,
                 'md-warn': this.exam.grade < 5
             }
@@ -193,46 +201,62 @@ var App = new Vue({
             });
         },
         exitTest: function () {
-            this.exam = {
+            this.examStatus = {
                 inProgress: false,
-                result: false,
-                grade: 0,
-                correct: [],
-                wrong: []
-            };
+                result: false
+            }
             this.questionListShuffled = [];
         },
         checkAnswers: function () {
             var t = this;
             this.exam = {
-                inProgress: false,
-                result: true,
                 grade: 0,
                 correct: [],
                 wrong: []
             };
+            this.examStatus = {
+                inProgress: false,
+                result: true
+            }
             t.questionListShuffled.forEach(function (entry) {
                 if (entry.choosen == entry.correctAnswer) {
-                    t.exam.correct.push(entry['.key']);
+                    t.exam.correct.push({
+                        'id': entry['.key'],
+                        'choosen': entry.choosen,
+                        'correctAnswer': entry.correctAnswer
+                    });
                 } else {
-                    t.exam.wrong.push(entry['.key']);
+                    t.exam.wrong.push({
+                        'id': entry['.key'],
+                        'choosen': entry.choosen,
+                        'correctAnswer': entry.correctAnswer
+                    });
                 }
             });
 
             t.exam.grade = (t.exam.correct.length / t.questionListShuffled.length) * 10;
 
             window.scrollTo(0, 0);
+
+            var data = this.exam;
+
+            data['date'] = Date.now();
+            data['topic'] = this.currentTopicName;
+            data['level'] = this.currentLevelName;
+            this.$firebaseRefs.exams.push(data);
         },
         shuffleQuestion: function () {
             var questionListShuffled = this.questionList;
             this.exam = {
-                inProgress: true,
-                result: false,
                 grade: 0,
                 correct: [],
                 wrong: []
             };
 
+            this.examStatus = {
+                inProgress: true,
+                result: false
+            }
             questionListShuffled.sort(function () {
                 return 0.5 - Math.random()
             });

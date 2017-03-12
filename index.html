@@ -33,7 +33,7 @@
             </md-dialog-actions>
         </md-dialog>
 
-        <md-dialog md-open-from="#settings" md-close-to="#settings" ref="settings">
+        <md-dialog ref="settings">
             <md-dialog-title>Elige el curso y el tema</md-dialog-title>
 
             <md-dialog-content>
@@ -68,9 +68,6 @@
         </md-snackbar>
         <transition name="fade">
             <div v-if="ifLogin">
-                <md-button class="md-fab md-raised md-primary md-fab-bottom-right" id="settings" @click.native="openDialog('settings')" style="position: fixed">
-                    <md-icon>settings</md-icon>
-                </md-button>
 
                 <md-toolbar class="md-primary md-medium" md-centered>
                     <div class="container nav">
@@ -89,10 +86,12 @@
                     <md-tab id="submitQuestion" md-icon="send">
                         <div class="container">
 
-                            <form validate @submit.stop.prevent="submit">
+                            <form>
+
                                 <md-chip>{{ currentLevelName }}</md-chip>
                                 <md-chip>{{ currentTopicName }}</md-chip>
 
+                                <md-button @click.native="openDialog('settings')" style="float:right;margin:0">Cambiar</md-button>
                                 <md-input-container>
                                     <label>Pregunta</label>
                                     <md-input v-model="question.title" :required="true"></md-input>
@@ -147,14 +146,14 @@
                     </md-tab>
                     <md-tab id="checkQuestion" md-icon="view_list">
                         <div class="container">
-                            <div v-if="!exam.inProgress">
+                            <div v-if="!examStatus.inProgress">
                                 <md-card class="md-primary" v-if="!questionList.length && currentTopic !== null">
                                     <md-card-header>
                                         <div class="md-title">No hay preguntas bajo el tema de {{ currentTopicName }}.</div>
                                     </md-card-header>
                                     <md-card-actions>
                                         <md-button @click.native="switchTab(0)">Crear una ahora</md-button>
-                                        <md-button @click.native="openDialog('settings')">Camiar el tema</md-button>
+                                        <md-button @click.native="openDialog('settings')">Cambiar el tema</md-button>
                                     </md-card-actions>
                                 </md-card>
                                 <md-card style="margin-bottom: 1em;" v-for="(item, index) in reverse(questionList)">
@@ -198,13 +197,13 @@
                     </md-tab>
                     <md-tab id="doTest" md-icon="assignment">
                         <div class="container">
-                            <div v-if="!exam.inProgress && !questionListShuffled.length">
+                            <div v-if="!examStatus.inProgress && !questionListShuffled.length">
                                 <md-card class="md-accent" v-if="!questionList.length && currentTopic !== null">
                                     <md-card-header>
                                         <div class="md-title">No hay preguntas bajo el tema de {{ currentTopicName }}</div>
                                     </md-card-header>
                                     <md-card-content>
-                                        Elegir un tema con preguntas para poder comenzar el examen.
+                                        Elige otro tema con preguntas para poder comenzar el examen.
                                     </md-card-content>
                                     <md-card-actions>
                                         <md-button @click.native="openDialog('settings')">Cambiar el tema</md-button>
@@ -223,7 +222,7 @@
                                     </md-card-actions>
                                 </md-card>
                             </div>
-                            <md-card v-if="exam.inProgress" style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled">
+                            <md-card v-if="examStatus.inProgress" style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled">
                                 <md-card-header>
                                     <h2 class="md-title">{{ item.title }}</h2>
                                     <div class="md-subhead">
@@ -245,8 +244,8 @@
                                     </md-list>
                                 </md-card-content>
                             </md-card>
-                            <md-button @click.native="checkAnswers()" class="md-raised md-primary fullWidth" v-if="exam.inProgress">Comprobar</md-button>
-                            <div v-if="exam.result">
+                            <md-button @click.native="checkAnswers()" class="md-raised md-primary fullWidth" v-if="examStatus.inProgress">Comprobar</md-button>
+                            <div v-if="examStatus.result">
                                 <md-card v-bind:class="examCardClass">
                                     <md-card-header>
                                         <div class="md-title">Nota: {{exam.grade.toPrecision(2)}}</div>
@@ -255,7 +254,7 @@
                                     </md-card-header>
                                 </md-card>
                                 <md-card v-for="value in exam.wrong">
-                                    <div v-for="item in getQuestionByKey(value,questionListShuffled)">
+                                    <div v-for="item in getQuestionByKey(value.id,questionListShuffled)">
                                         <md-card-header>
                                             <div class="md-title">{{ item.title }}</div>
                                         </md-card-header>
@@ -267,7 +266,7 @@
                                     </div>
                                 </md-card>
                             </div>
-                            <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth" v-if="exam.result">Terminar</md-button>
+                            <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth" v-if="examStatus.result">Terminar</md-button>
                         </div>
                     </md-tab>
                 </md-tabs>
