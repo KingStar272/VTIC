@@ -69,17 +69,22 @@
         <transition name="fade">
             <div v-if="ifLogin">
 
-                <md-toolbar class="md-primary md-medium" md-centered>
+                <md-toolbar>
                     <div class="container nav">
-                        <md-menu style="margin: 0 auto;">
-                            <md-avatar class="md-large" md-menu-trigger style="cursor: pointer;">
+
+                        <div style="flex: 1">
+
+                            <md-avatar>
                                 <img :src="user.avatar" alt="Avatar">
                                 <md-tooltip md-direction="bottom">{{ user.name }}</md-tooltip>
                             </md-avatar>
-                            <md-menu-content>
-                                <md-menu-item @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">Cerrar sesión</md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
+                        </div>
+
+                        <md-button @click.native="openDialog('settings')">{{ currentLevelName }} / {{ currentTopicName }}</md-button>
+
+                        <md-button class="md-icon-button" @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">
+                            <md-icon>exit_to_app</md-icon>
+                        </md-button>
                     </div>
                 </md-toolbar>
                 <md-tabs md-fixed @change="changeRoute" :md-dynamic-height="false">
@@ -87,9 +92,6 @@
                         <div class="container">
 
                             <form>
-
-                                <md-chip>{{ currentLevelName }}</md-chip>
-                                <md-chip>{{ currentTopicName }}</md-chip>
 
                                 <md-button @click.native="openDialog('settings')" style="float:right;margin:0">Cambiar</md-button>
                                 <md-input-container>
@@ -271,14 +273,14 @@
                     </md-tab>
                     <md-tab id="profile" md-icon="person">
                         <div class="container">
-                                <md-card class="md-accent" v-if="user.exams == undefined || user.exams.length == 0">
-                                    <md-card-header>
-                                        <div class="md-title">No has hecho todavía ningún examen</div>
-                                    </md-card-header>
-                                    <md-card-actions>
-                                        <md-button @click.native="switchTab(2)">Hacer uno ahora</md-button>
-                                    </md-card-actions>
-                                </md-card>
+                            <md-card class="md-accent" v-if="user.exams == undefined || user.exams.length == 0">
+                                <md-card-header>
+                                    <div class="md-title">No has hecho todavía ningún examen</div>
+                                </md-card-header>
+                                <md-card-actions>
+                                    <md-button @click.native="switchTab(2)">Hacer uno ahora</md-button>
+                                </md-card-actions>
+                            </md-card>
                             <md-table v-else>
                                 <md-table-header>
                                     <md-table-row>
