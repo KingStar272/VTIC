@@ -271,7 +271,15 @@
                     </md-tab>
                     <md-tab id="profile" md-icon="person">
                         <div class="container">
-                            <md-table>
+                                <md-card class="md-accent" v-if="user.exams == undefined || user.exams.length == 0">
+                                    <md-card-header>
+                                        <div class="md-title">No has hecho todavía ningún examen</div>
+                                    </md-card-header>
+                                    <md-card-actions>
+                                        <md-button @click.native="switchTab(2)">Hacer uno ahora</md-button>
+                                    </md-card-actions>
+                                </md-card>
+                            <md-table v-else>
                                 <md-table-header>
                                     <md-table-row>
                                         <md-table-head>Fecha</md-table-head>
