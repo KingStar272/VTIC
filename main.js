@@ -173,9 +173,7 @@ var App = new Vue({
         },
         currentTopic: function () {
             var t = this;
-            this.currentTopicName = this.topics.filter(function (obj) {
-                return obj.slug == t.currentTopic;
-            })[0].name;
+            this.currentTopicName = this.getTopicName(t.currentTopic);
             this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"))
         },
         title: function () {
@@ -204,6 +202,12 @@ var App = new Vue({
         }
     },
     methods: {
+        getTopicName: function (topic){
+            var t = this;
+            return this.topics.filter(function (obj) {
+                return obj.slug == topic;
+            })[0].name;
+        },
         objectToArray: function (obj) {
             if (obj) {
                 return Object.keys(obj).map(key => obj[key]);
@@ -236,14 +240,15 @@ var App = new Vue({
                 if (entry.choosen == entry.correctAnswer) {
                     t.exam.correct.push({
                         'id': entry['.key'],
-                        'choosen': entry.choosen,
-                        'correctAnswer': entry.correctAnswer
+                        'title': entry.title,
+                        'choosen': entry.choosen
                     });
                 } else {
                     t.exam.wrong.push({
                         'id': entry['.key'],
                         'choosen': entry.choosen,
-                        'correctAnswer': entry.correctAnswer
+                        'correctAnswer': entry.correctAnswer,
+                        'answers': entry.answers
                     });
                 }
             });
