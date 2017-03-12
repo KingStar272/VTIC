@@ -164,6 +164,7 @@ var App = new Vue({
             this.topics = this.levels[this.currentLevel].topics
             this.loading = false;
             this.currentLevelName = this.levels[this.currentLevel].name;
+            this.currentTopic = this.topics[0].slug;
         },
         currentTopic: function () {
             var t = this;
