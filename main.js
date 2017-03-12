@@ -93,7 +93,7 @@ var App = new Vue({
         fullscreenLoading: true,
 
         title: 'Enviar preguntas',
-        titles: ['Enviar preguntas', 'Ver preguntas', 'Examinar'],
+        titles: ['Enviar preguntas', 'Ver preguntas', 'Examinar', 'Perfil'],
 
         user: {},
         messages: [],
@@ -200,8 +200,9 @@ var App = new Vue({
     },
     methods: {
         objectToArray: function (obj) {
-
-            return Object.values(obj);
+            if (obj) {
+                return Object.values(obj);
+            }
         },
         getQuestionByKey: function (k, array) {
             return array.filter(function (obj) {
