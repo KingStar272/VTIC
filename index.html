@@ -76,7 +76,7 @@
 
                             <md-avatar>
                                 <img :src="user.avatar" alt="Avatar">
-                                <md-tooltip md-direction="bottom">{{ user.name }}</md-tooltip>
+                                <md-tooltip md-direction="right">{{ user.name }}</md-tooltip>
                             </md-avatar>
                         </div>
 
@@ -91,7 +91,7 @@
                     <md-tab id="submitQuestion" md-icon="send">
                         <div class="container">
 
-                            <form>
+                            <form v-on:submit.prevent>
 
                                 <md-input-container>
                                     <label>Pregunta</label>
@@ -162,6 +162,7 @@
                                         <md-avatar>
                                             <img :src="item.author.avatar" alt="People">
                                         </md-avatar>
+
                                         <div class="md-title">{{ item.author.name }}</div>
                                         <div class="md-subhead" :title="item.date | toDate">
                                             <timeago :auto-update="60" :since="item.date"></timeago>

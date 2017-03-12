@@ -72,7 +72,8 @@ var App = new Vue({
 
                 this.snackBar.message = 'Iniciada la sesión como ' + user.email;
                 this.openSnackBar();
-                this.question.author = this.user;
+                this.questionAuthor = data;
+                this.question.author = this.questionAuthor;
 
                 console.log(user);
 
@@ -126,7 +127,7 @@ var App = new Vue({
         question: {
             title: null,
             date: null,
-            author: this.user,
+            author: null,
             correctAnswer: 'a',
             answers: {
                 a: null,
@@ -135,6 +136,7 @@ var App = new Vue({
                 d: null
             }
         },
+        questionAuthor: {},
 
         questionList: [],
 
@@ -197,7 +199,7 @@ var App = new Vue({
                 'md-warn': this.exam.grade < 5
             }
         },
-        examList: function(){
+        examList: function () {
             return this.objectToArray(this.user.exams)
         }
     },
@@ -315,7 +317,7 @@ var App = new Vue({
                 t.question = {
                     title: null,
                     date: null,
-                    author: t.user,
+                    author: t.questionAuthor,
                     correctAnswer: 'a',
                     answers: {}
                 };
