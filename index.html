@@ -271,7 +271,7 @@
                     </md-tab>
                     <md-tab id="profile" md-icon="person">
                         <div class="container">
-                            <md-table v-once>
+                            <md-table>
                                 <md-table-header>
                                     <md-table-row>
                                         <md-table-head>Fecha</md-table-head>
@@ -283,7 +283,7 @@
                                 </md-table-header>
 
                                 <md-table-body>
-                                    <md-table-row v-for="item in objectToArray(user.exams)">
+                                    <md-table-row v-for="item in examList">
 
                                         <md-table-cell>{{ item.date | toDate }}</md-table-cell>
                                         <md-table-cell>{{ item.topic }}</md-table-cell>

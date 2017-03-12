@@ -70,7 +70,7 @@ var App = new Vue({
                     this.$firebaseRefs.user.child(key).set(data[key]);
                 };
 
-                this.snackBar.message = 'Iniciada la sesión como ' + this.user.email;
+                this.snackBar.message = 'Iniciada la sesión como ' + user.email;
                 this.openSnackBar();
                 this.question.author = this.user;
 
@@ -196,6 +196,9 @@ var App = new Vue({
                 'md-accent': this.exam.grade > 5 && this.exam.grade < 8,
                 'md-warn': this.exam.grade < 5
             }
+        },
+        examList: function(){
+            return this.objectToArray(this.user.exams)
         }
     },
     methods: {
