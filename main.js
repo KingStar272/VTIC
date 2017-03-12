@@ -57,17 +57,20 @@ var App = new Vue({
 
                 this.$bindAsArray('levels', db.ref('level/'));
 
-                this.user = {
+                this.$bindAsObject('user', db.ref('users/' + user.uid))
+
+                var data = {
                     'name': user.displayName,
                     'email': user.email,
                     'avatar': user.photoURL,
                     'uid': user.uid
                 };
 
-                firebase.database().ref('users/' + this.user.uid + '/').set(this.user);
-                this.$bindAsArray('exams', db.ref('users/' + this.user.uid + '/exams/'));
+                for (var key in data) {
+                    this.$firebaseRefs.user.child(key).set(data[key]);
+                };
 
-                this.snackBar.message = 'Iniciado la sesión como ' + this.user.email;
+                this.snackBar.message = 'Iniciada la sesión como ' + this.user.email;
                 this.openSnackBar();
                 this.question.author = this.user;
 
@@ -143,7 +146,7 @@ var App = new Vue({
             wrong: []
         },
 
-        examStatus:{
+        examStatus: {
             inProgress: false,
             result: false
         }
@@ -196,6 +199,10 @@ var App = new Vue({
         }
     },
     methods: {
+        objectToArray: function (obj) {
+
+            return Object.values(obj);
+        },
         getQuestionByKey: function (k, array) {
             return array.filter(function (obj) {
                 return obj['.key'] == k;
@@ -244,7 +251,7 @@ var App = new Vue({
             data['date'] = Date.now();
             data['topic'] = this.currentTopicName;
             data['level'] = this.currentLevelName;
-            this.$firebaseRefs.exams.push(data);
+            this.$firebaseRefs.user.child('exams').push(data);
         },
         shuffleQuestion: function () {
             var questionListShuffled = this.questionList;
@@ -366,7 +373,7 @@ var App = new Vue({
 
         logOut: function () {
             firebase.auth().signOut();
-            this.snackBar.message = 'Cerrado la sesión.';
+            this.snackBar.message = 'Cerrada la sesión.';
             this.openSnackBar();
         },
 
