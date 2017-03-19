@@ -1,21 +1,11 @@
-# vtic
+# VTIC
 
-> A Vue.js project
+## Used libraries
 
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+ * [vue](https://github.com/vuejs/vue)
+ * [vue-material](https://github.com/marcosmoura/vue-material)
+ * [vue-timeago](https://github.com/egoist/vue-timeago)
+ * [vuefire](https://github.com/vuejs/vuefire)
+ * [vue-router](https://github.com/vuejs/vue-router)
+ * [http-vue-loader](https://github.com/FranckFreiburger/http-vue-loader)
+ * [axios](https://github.com/mzabriskie/axios)
