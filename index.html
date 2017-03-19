@@ -112,7 +112,7 @@
                         </md-list-item>
 
                         <md-whiteframe md-elevation="2" id="signOutButton">
-                            <md-list-item @click.native="auth.logOut();">
+                            <md-list-item @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">
                                 <md-icon>exit_to_app</md-icon> <span>Salir</span>
                             </md-list-item>
                         </md-whiteframe>
