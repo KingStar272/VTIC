@@ -11,11 +11,12 @@
         </md-card>
         <md-card style="margin-bottom: 1em;" v-for="(item, index) in reverse($root.questionList)" :key="item['.key']">
             <md-card-header>
+
                 <md-avatar>
-                    <img :src="item.author.avatar" alt="People">
+                    <img :src="$root.getUserInfo(item.author).avatar" alt="People">
                 </md-avatar>
 
-                <div class="md-title">{{ item.author.name }}</div>
+                <div class="md-title">{{ $root.getUserInfo(item.author).name }}</div>
                 <div class="md-subhead" :title="item.date | toDate">
                     <timeago :auto-update="60" :since="item.date"></timeago>
                 </div>
@@ -35,7 +36,7 @@
                         <md-divider v-if="letter !== 'd'"></md-divider>
                     </md-list-item>
                 </md-list>
-                <md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author.uid == $root.user.uid">Eliminar</md-button>
+                <md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author == $root.user.uid">Eliminar</md-button>
 
             </md-card-content>
         </md-card>
@@ -50,6 +51,7 @@
 </template>
 <script>
     module.exports = {
+
         methods: {
             reverse: function (array) {
                 return array.slice().reverse();
@@ -70,7 +72,7 @@
 
                 this.$root.openDialog('confirm')
 
-            },
+            }
         }
     }
 </script>

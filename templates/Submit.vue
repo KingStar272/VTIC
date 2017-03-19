@@ -95,14 +95,14 @@
                 }
 
                 this.question.date = Date.now();
-                this.question.author = this.$root.questionAuthor;
+                this.question.author = t.$root.user.uid;
                 this.$root.$firebaseRefs.questionList.push(this.question).then(successCallback);
 
                 function successCallback() {
                     t.question = {
                         title: null,
                         date: null,
-                        author: t.$root.questionAuthor,
+                        author: t.$root.user.uid,
                         correctAnswer: 'a',
                         answers: {}
                     };

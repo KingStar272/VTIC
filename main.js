@@ -47,7 +47,7 @@ const router = new VueRouter({
         }, {
             path: '/submit',
             component: httpVueLoader('templates/Submit.vue'),
-            name: 'Enviar pregunta'
+            name: 'Enviar'
         },
         {
             path: '/exam',
@@ -82,22 +82,26 @@ var App = new Vue({
 
                 this.$bindAsArray('levels', db.ref('level/'));
 
-                this.$bindAsObject('user', db.ref('users/' + user.uid))
+                this.$bindAsObject('user', db.ref('users/' + user.uid));
 
-                var data = {
-                    'name': user.displayName,
-                    'email': user.email,
-                    'avatar': user.photoURL,
-                    'uid': user.uid
-                };
+                this.$bindAsObject('userList', db.ref('users/'));
 
-                for (var key in data) {
-                    this.$firebaseRefs.user.child(key).set(data[key]);
-                };
+
+
+                if (!this.user.hasOwnProperty()) {
+                    var data = {
+                        'name': user.displayName,
+                        'email': user.email,
+                        'avatar': user.photoURL,
+                        'uid': user.uid
+                    };
+                    for (var key in data) {
+                        this.$firebaseRefs.user.child(key).set(data[key]);
+                    };
+                }
 
                 this.snackBar.message = 'Iniciada la sesión como ' + user.email;
                 this.openSnackBar();
-                this.questionAuthor = data;
 
                 console.log(user);
 
@@ -181,12 +185,15 @@ var App = new Vue({
                 t = this;
             if (latest == null) return;
             if (latest.date > this.initialDate) {
-                t.snackBar.message = latest.author.name + ' acaba de publicar una pregunta nueva en el tema de ' + t.currentTopicName;
+                t.snackBar.message = t.getUserInfo(latest.author).name + ' acaba de publicar una pregunta nueva en el tema de ' + t.currentTopicName;
                 t.openSnackBar();
             };
         }
     },
     methods: {
+        getUserInfo: function (uid) {
+            return this.$root.userList[uid]
+        },
         getTopicName: function (topic) {
             var t = this;
             return this.topics.filter(function (obj) {
@@ -271,7 +278,7 @@ Vue.filter('toDate', function (value) {
         h = 12;
     }
 
-    if(s < 10){
+    if (s < 10) {
         s = '0' + s;
     }
     time = yyyy + '/' + mm + '/' + dd + ', ' + hh + ':' + min + ':' + s;
@@ -287,4 +294,5 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach(route => {
     App.loading = false;
+    document.title = route.name;
 })
