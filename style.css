@@ -117,7 +117,7 @@ button.fullWidth {
 	left: 0;
 
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 	.md-toolbar-container,
 	#main {
 		padding-left: 310px;

@@ -244,7 +244,7 @@ var App = new Vue({
         topicList: function (level) {
             this.$bindAsArray('topics', db.ref('level/' + currentLevel.slug));
             this.loading = false;
-        }
+        },
     }
 
 }).$mount('#app')
@@ -271,7 +271,15 @@ Vue.filter('toDate', function (value) {
         h = 12;
     }
 
+    if(s < 10){
+        s = '0' + s;
+    }
     time = yyyy + '/' + mm + '/' + dd + ', ' + hh + ':' + min + ':' + s;
 
     return time;
 });
+
+router.beforeEach((to, from, next) => {
+    App.closeDialog('sidenav');
+    next();
+})

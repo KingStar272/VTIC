@@ -24,11 +24,11 @@
 
                     <md-table-cell>{{ item.date | toDate }}</md-table-cell>
                     <md-table-cell>{{ item.topic }}</md-table-cell>
-                    <md-table-cell>{{ item.grade }}</md-table-cell>
-                    <md-table-cell v-if="item.grade">{{ item.correct.length }}</md-table-cell>
-                    <md-table-cell v-else>0</md-table-cell>
-                    <md-table-cell v-if="item.grade !== 10">{{ item.wrong.length }}</md-table-cell>
-                    <md-table-cell v-else>0</md-table-cell>
+                    <md-table-cell md-numeric>{{ item.grade }}</md-table-cell>
+                    <md-table-cell md-numeric v-if="item.grade">{{ item.correct.length }}</md-table-cell>
+                    <md-table-cell md-numeric v-else>0</md-table-cell>
+                    <md-table-cell md-numeric v-if="item.grade !== 10">{{ item.wrong.length }}</md-table-cell>
+                    <md-table-cell md-numeric v-else>0</md-table-cell>
                 </md-table-row>
             </md-table-body>
         </md-table>
