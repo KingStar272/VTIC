@@ -281,5 +281,10 @@ Vue.filter('toDate', function (value) {
 
 router.beforeEach((to, from, next) => {
     App.closeDialog('sidenav');
+    App.loading = true;
     next();
+})
+
+router.afterEach(route => {
+    App.loading = false;
 })

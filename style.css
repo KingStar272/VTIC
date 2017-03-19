@@ -118,9 +118,11 @@ button.fullWidth {
 
 }
 @media (min-width: 1024px) {
-	.md-toolbar-container,
-	#main {
+	.md-toolbar-container{
 		padding-left: 310px;
+	}
+	#main{
+		padding-left: 330px;
 	}
 	.md-left.md-fixed .md-sidenav-content {
 		top: 0;
