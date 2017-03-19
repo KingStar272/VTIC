@@ -39,9 +39,34 @@ Vue.material.registerTheme('background', {
     }
 });
 
+const router = new VueRouter({
+    routes: [{
+            path: '/',
+            name: 'Inicio',
+            component: httpVueLoader('templates/Dashboard.vue'),
+        }, {
+            path: '/submit',
+            component: httpVueLoader('templates/Submit.vue'),
+            name: 'Enviar pregunta'
+        },
+        {
+            path: '/exam',
+            component: httpVueLoader('templates/Exam.vue'),
+            name: 'Examinar'
+        },
+        {
+            path: '/profile',
+            component: httpVueLoader('templates/Profile.vue'),
+            name: 'Perfil'
+        },
+    ]
+});
+
+
 
 var App = new Vue({
     el: '#app',
+    router,
     beforeCreate: function () {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
@@ -53,7 +78,7 @@ var App = new Vue({
                     return;
                 };
 
-                this.ifLogin = true;
+                this.loggedIn = true;
 
                 this.$bindAsArray('levels', db.ref('level/'));
 
@@ -73,14 +98,13 @@ var App = new Vue({
                 this.snackBar.message = 'Iniciada la sesión como ' + user.email;
                 this.openSnackBar();
                 this.questionAuthor = data;
-                this.question.author = this.questionAuthor;
 
                 console.log(user);
 
                 this.initialDate = Date.now();
             } else {
 
-                this.ifLogin = false;
+                this.loggedIn = false;
                 this.fullscreenLoading = false;
 
             }
@@ -89,12 +113,9 @@ var App = new Vue({
     },
     data: {
         initialDate: null,
-        ifLogin: false,
+        loggedIn: false,
         loading: false,
         fullscreenLoading: true,
-
-        title: 'Enviar preguntas',
-        titles: ['Enviar preguntas', 'Ver preguntas', 'Examinar', 'Perfil'],
 
         user: {},
         messages: [],
@@ -117,41 +138,20 @@ var App = new Vue({
         confirm: {},
 
         snackBar: {
-            vertical: 'top',
+            vertical: 'bottom',
             horizontal: 'right',
             duration: 4000,
             message: 'Nope'
         },
 
-
-        question: {
-            title: null,
-            date: null,
-            author: null,
-            correctAnswer: 'a',
-            answers: {
-                a: null,
-                b: null,
-                c: null,
-                d: null
-            }
-        },
-        questionAuthor: {},
-
         questionList: [],
-
-        questionListShuffled: [],
-
-        exam: {
-            grade: 0,
-            correct: [],
-            wrong: []
-        },
+        questionAuthor: {},
 
         examStatus: {
             inProgress: false,
             result: false
         }
+
     },
 
     watch: {
@@ -160,7 +160,6 @@ var App = new Vue({
                 this.currentLevel = 0;
                 this.currentTopic = this.levels[0].topics[0].slug;
                 this.fullscreenLoading = false;
-                document.title = this.titles[0];
             }
 
         },
@@ -176,9 +175,7 @@ var App = new Vue({
             this.currentTopicName = this.getTopicName(t.currentTopic);
             this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"))
         },
-        title: function () {
-            document.title = this.title
-        },
+
         questionList: function () {
             var latest = this.questionList[this.questionList.length - 1],
                 t = this;
@@ -189,171 +186,14 @@ var App = new Vue({
             };
         }
     },
-    computed: {
-        examCardClass: function () {
-            return {
-                'md-primary': this.exam.grade >= 8,
-                'md-accent': this.exam.grade > 5 && this.exam.grade < 8,
-                'md-warn': this.exam.grade < 5
-            }
-        },
-        examList: function () {
-            return this.objectToArray(this.user.exams)
-        }
-    },
     methods: {
-        getTopicName: function (topic){
+        getTopicName: function (topic) {
             var t = this;
             return this.topics.filter(function (obj) {
                 return obj.slug == topic;
             })[0].name;
         },
-        objectToArray: function (obj) {
-            if (obj) {
-                return Object.keys(obj).map(key => obj[key]);
-            }
-        },
-        getQuestionByKey: function (k, array) {
-            return array.filter(function (obj) {
-                return obj['.key'] == k;
-            });
-        },
-        exitTest: function () {
-            this.examStatus = {
-                inProgress: false,
-                result: false
-            }
-            this.questionListShuffled = [];
-        },
-        checkAnswers: function () {
-            var t = this;
-            this.exam = {
-                grade: 0,
-                correct: [],
-                wrong: []
-            };
-            this.examStatus = {
-                inProgress: false,
-                result: true
-            }
-            t.questionListShuffled.forEach(function (entry) {
-                if (entry.choosen == entry.correctAnswer) {
-                    t.exam.correct.push({
-                        'id': entry['.key'],
-                        'title': entry.title,
-                        'choosen': entry.choosen
-                    });
-                } else {
-                    t.exam.wrong.push({
-                        'id': entry['.key'],
-                        'choosen': entry.choosen,
-                        'correctAnswer': entry.correctAnswer,
-                        'answers': entry.answers
-                    });
-                }
-            });
 
-            t.exam.grade = (t.exam.correct.length / t.questionListShuffled.length) * 10;
-
-            window.scrollTo(0, 0);
-
-            var data = this.exam;
-
-            data['date'] = Date.now();
-            data['topic'] = this.currentTopicName;
-            data['level'] = this.currentLevelName;
-            this.$firebaseRefs.user.child('exams').push(data);
-        },
-        shuffleQuestion: function () {
-            var questionListShuffled = this.questionList;
-            this.exam = {
-                grade: 0,
-                correct: [],
-                wrong: []
-            };
-
-            this.examStatus = {
-                inProgress: true,
-                result: false
-            }
-            questionListShuffled.sort(function () {
-                return 0.5 - Math.random()
-            });
-
-            this.questionListShuffled = questionListShuffled.map(function (el) {
-                var o = Object.assign({}, el);
-                o.choosen = 'a';
-                return o;
-            }).slice(0, 10);
-        },
-        reverse: function (array) {
-            return array.slice().reverse();
-        },
-        addQuestion: function () {
-
-            if ((this.currentLevel == null) || (this.currentTopic == null)) {
-                this.snackBar.message = 'Por favor escoja un tema.';
-                this.openSnackBar();
-                return;
-            };
-
-            if (this.question.title == null) {
-                this.snackBar.message = 'Por favor añade un título.';
-                this.openSnackBar();
-                return;
-            };
-
-            var t = this;
-            var j = ['a', 'b', 'c', 'd'];
-
-            for (var i = 0, len = j.length; i < len; i++) {
-                if (t.question.answers[j[i]] == "" || t.question.answers[j[i]] == null) {
-                    t.snackBar.message = 'Por favor rellena todos los campos.';
-                    t.openSnackBar();
-                    return;
-                };
-            }
-
-            this.loading = true;
-            this.question.date = Date.now();
-            this.$firebaseRefs.questionList.push(this.question).then(successCallback);
-
-            function successCallback() {
-                t.question = {
-                    title: null,
-                    date: null,
-                    author: t.questionAuthor,
-                    correctAnswer: 'a',
-                    answers: {}
-                };
-                t.loading = false;
-            };
-
-        },
-        removeQuestion: function (question) {
-            this.confirm = {
-                title: 'Confirmar',
-                contentHtml: 'Eliminar la pregunta <strong>' + question.title + '</strong> ?',
-                ok: 'Yep',
-                cancel: 'Nope'
-            };
-
-            this.onConfirm = function () {
-                this.$firebaseRefs.questionList.child(question['.key']).remove();
-                this.snackBar.message = 'La pregunta ha sido eliminada.';
-                this.openSnackBar();
-            };
-
-            this.openDialog('confirm')
-
-        },
-
-        changeRoute(tab) {
-            this.title = this.titles[tab];
-        },
-        switchTab: function (tab) {
-            document.getElementsByClassName('md-tab-header')[tab].click()
-        },
         login: function () {
 
             var t = this;
@@ -407,7 +247,7 @@ var App = new Vue({
         }
     }
 
-})
+}).$mount('#app')
 
 Vue.filter('toDate', function (value) {
     var d = new Date(value),

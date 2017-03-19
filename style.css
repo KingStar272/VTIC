@@ -1,41 +1,42 @@
-.container{
+.container {
 	max-width: 750px;
 	margin: 0 auto;
 }
 
-.container.extend{
+.container.extend {
 	max-width: 1200px;
 }
 
-.container.nav{
+.container.nav {
 	flex: 1;
-    display: flex;
-}
-.md-tabs-navigation {
-  	display: none;
+	display: flex;
 }
 
-.container.nav .md-title{
+.md-tabs-navigation {
+	display: none;
+}
+
+.container.nav .md-title {
 	line-height: 40px;
 }
-#app #linear-loader{
+
+#app #linear-loader {
 	position: fixed;
 	top: 0;
 	left: 0;
 	z-index: 999;
 }
 
-#loginButton{
+#loginButton {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate3D(-50%,-50%,0);
+	transform: translate3D(-50%, -50%, 0);
 	width: 200px;
 	cursor: pointer;
 }
 
-
-#fullscreen-loader{
+#fullscreen-loader {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -47,10 +48,10 @@
 }
 
 div#fullscreen-loader.hidden {
-    opacity: 0;
+	opacity: 0;
 }
 
-#fullscreen-loader .md-spinner{
+#fullscreen-loader .md-spinner {
 	position: absolute;
 	top: calc(50% - 75px);
 	left: calc(50% - 75px);
@@ -58,15 +59,82 @@ div#fullscreen-loader.hidden {
 	width: 150px;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter, .fade-leave-active {
-  opacity: 0
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity .5s
 }
 
-button.fullWidth{
+.fade-enter,
+.fade-leave-active {
+	opacity: 0
+}
+
+.slide-fade-enter-active {
+	transition: all .3s ease;
+}
+
+.slide-fade-leave-active {
+	transition: all .3s ease;
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+	transform: translateX(10px);
+	opacity: 0;
+}
+
+button.fullWidth {
 	width: 100%;
-    margin-left: 0;
+	margin-left: 0;
 	margin-right: 0;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 15px;
+}
+
+#main {
+	padding-top: 40px;
+}
+
+#sideNav--bg {
+
+	background-size: cover;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#sideNav--bg:after{
+	content: "";
+	background: rgba(138, 138, 138, 0.7);
+	position: absolute;
+	top: 0;
+	left: 0;
+
+}
+@media (min-width: 1280px) {
+	.md-toolbar-container,
+	#main {
+		padding-left: 310px;
+	}
+	.md-left.md-fixed .md-sidenav-content {
+		top: 0;
+		pointer-events: auto;
+		transform: translate3d(0, 0, 0);
+		box-shadow: 0 1px 5px rgba(0, 0, 0, .2), 0 2px 2px rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12);
+	}
+	#menuToggle {
+		display: none;
+	}
+}
+
+#signOutButton {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
 }
