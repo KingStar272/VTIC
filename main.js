@@ -86,8 +86,6 @@ var App = new Vue({
 
                 this.$bindAsObject('userList', db.ref('users/'));
 
-
-
                 if (!this.user.hasOwnProperty()) {
                     var data = {
                         'name': user.displayName,
@@ -161,8 +159,15 @@ var App = new Vue({
     watch: {
         levels: function () {
             if (this.levels.length !== 0) {
-                this.currentLevel = 0;
-                this.currentTopic = this.levels[0].topics[0].slug;
+                if (localStorage.currentTopic) {
+                    this.currentLevel = localStorage.getItem('currentLevel');
+                    this.currentTopic = localStorage.getItem('currentTopic');
+                } else {
+                    this.currentLevel = 0;
+                    this.currentTopic = this.levels[0].topics[0].slug;
+                    this.openDialog('settings');
+                };
+
                 this.fullscreenLoading = false;
             }
 
@@ -172,12 +177,11 @@ var App = new Vue({
             this.topics = this.levels[this.currentLevel].topics
             this.loading = false;
             this.currentLevelName = this.levels[this.currentLevel].name;
-            this.currentTopic = this.topics[0].slug;
         },
         currentTopic: function () {
             var t = this;
             this.currentTopicName = this.getTopicName(t.currentTopic);
-            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"))
+            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"));
         },
 
         questionList: function () {
@@ -240,6 +244,15 @@ var App = new Vue({
         },
         closeDialog(ref) {
             this.$refs[ref].close();
+
+            if (ref == 'settings') {
+
+                localStorage.setItem('currentLevel', this.currentLevel);
+                console.log('Set ' + this.currentLevel + ' as currentLevel in localstorage');
+                localStorage.setItem('currentTopic', this.currentTopic);
+                console.log('Set ' + this.currentTopic + ' as currentTopic in localstorage');
+
+            }
         },
         onConfirm: function () {
             this.logOut();

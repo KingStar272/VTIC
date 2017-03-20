@@ -33,7 +33,7 @@
             </md-dialog-actions>
         </md-dialog>
 
-        <md-dialog ref="settings">
+        <md-dialog ref="settings" md-open-from="#toggleSetting" md-close-to="#toggleSetting">
             <md-dialog-title>Elige el curso y el tema</md-dialog-title>
 
             <md-dialog-content>
@@ -42,14 +42,14 @@
                         <md-input-container>
                             <label for="currentLevel">Curso</label>
                             <md-select v-model="currentLevel">
-                                <md-option v-for="(item, index) in levels" v-bind:value="index" :key="item.slug">{{item.name}}</md-option>
+                                <md-option v-for="(item, index) in levels" v-bind:value="index" :key="index">{{item.name}}</md-option>
                             </md-select>
                         </md-input-container>
                     </md-layout>
                     <md-layout md-flex="100">
                         <md-input-container>
-                            <label for="currentLevel">Tema</label>
-                            <md-select name="currentTopic" v-model="currentTopic">
+                            <label for="currentTopic">Tema</label>
+                            <md-select v-model="currentTopic">
                                 <md-option v-for="element in topics" v-bind:value="element.slug" :key="element.slug">{{element.name}}</md-option>
                             </md-select>
                         </md-input-container>
@@ -127,7 +127,7 @@
 
                         <h2 class="md-title" style="flex: 1">{{ $route.name }}</h2>
 
-                        <md-button @click.native="openDialog('settings')">{{ currentLevelName }} / {{ currentTopicName }}</md-button>
+                        <md-button id="toggleSetting" @click.native="openDialog('settings')">{{ currentLevelName }} / {{ currentTopicName }}</md-button>
                     </div>
                 </md-whiteframe>
 
