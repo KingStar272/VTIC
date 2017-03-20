@@ -9,3 +9,4 @@
  * [vue-router](https://github.com/vuejs/vue-router)
  * [http-vue-loader](https://github.com/FranckFreiburger/http-vue-loader)
  * [axios](https://github.com/mzabriskie/axios)
+ * [vee-validate](https://github.com/logaretm/vee-validate)

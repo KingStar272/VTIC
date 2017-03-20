@@ -1,37 +1,47 @@
 <template>
     <form v-on:submit.prevent>
-        <md-input-container>
+        <md-input-container :class="{ 'md-input-invalid': errors.has('title') }">
             <label>Pregunta</label>
-            <md-input v-model="question.title" :required="true"></md-input>
+            <md-input v-model="question.title" data-vv-name="title" v-validate data-vv-rules="required"></md-input>
+            <span class="md-error">{{errors.first('title')}}</span>
         </md-input-container>
+
         <md-layout md-row :md-gutter="40">
             <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container>
+                <md-input-container :class="{ 'md-input-invalid': errors.has('answerA') }">
                     <label>Repuesta A</label>
-                    <md-input v-model="question.answers.a" :required="true"></md-input>
+                    <md-input v-model="question.answers.a" data-vv-name="answerA" v-validate data-vv-rules="required"></md-input>
+                    <span class="md-error">{{errors.first('answerA')}}</span>
                 </md-input-container>
             </md-layout>
+
             <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container>
+                <md-input-container :class="{ 'md-input-invalid': errors.has('answerB') }">
                     <label>Respuesta B</label>
-                    <md-input v-model="question.answers.b" :required="true"></md-input>
+                    <md-input v-model="question.answers.b" data-vv-name="answerB" v-validate data-vv-rules="required"></md-input>
+                    <span class="md-error">{{errors.first('answerB')}}</span>
                 </md-input-container>
             </md-layout>
         </md-layout>
+
         <md-layout md-row :md-gutter="40">
             <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container>
+                <md-input-container :class="{ 'md-input-invalid': errors.has('answerC') }">
                     <label>Respuesta C</label>
-                    <md-input v-model="question.answers.c" :required="true"></md-input>
+                    <md-input v-model="question.answers.c" data-vv-name="answerC" v-validate data-vv-rules="required"></md-input>
+                    <span class="md-error">{{errors.first('answerC')}}</span>
                 </md-input-container>
             </md-layout>
+
             <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container>
+                <md-input-container :class="{ 'md-input-invalid': errors.has('answerD') }">
                     <label>Respuesta D</label>
-                    <md-input v-model="question.answers.d" :required="true"></md-input>
+                    <md-input v-model="question.answers.d" data-vv-name="answerD" v-validate data-vv-rules="required"></md-input>
+                    <span class="md-error">{{errors.first('answerD')}}</span>
                 </md-input-container>
             </md-layout>
         </md-layout>
+        
         <md-layout md-gutter md-theme="default">
             <md-layout md-flex-xsmall="25%">
                 <md-radio v-model="question.correctAnswer" md-value="a">A</md-radio>
@@ -71,42 +81,34 @@
         },
         methods: {
             addQuestion() {
-
-                if ((this.$root.currentLevel == null) || (this.$root.currentTopic == null)) {
-                    this.$root.snackBar.message = 'Por favor escoja un tema.';
-                    this.$root.openSnackBar();
-                    return;
-                };
-
-                if (this.question.title == null) {
-                    this.$root.snackBar.message = 'Por favor añade un título.';
-                    this.$root.openSnackBar();
-                    return;
-                };
-
                 var t = this;
-                var j = ['a', 'b', 'c', 'd'];
 
-                for (var i = 0, len = j.length; i < len; i++) {
-                    if (t.question.answers[j[i]] == "" || t.question.answers[j[i]] == null) {
-                        alert('Por favor rellena todos los campos.');
-                        return;
-                    };
-                }
-
-                this.question.date = Date.now();
-                this.question.author = t.$root.user.uid;
-                this.$root.$firebaseRefs.questionList.push(this.question).then(successCallback);
-
-                function successCallback() {
-                    t.question = {
-                        title: null,
-                        date: null,
-                        author: t.$root.user.uid,
-                        correctAnswer: 'a',
-                        answers: {}
-                    };
+                if ((t.$root.currentLevel == null) || (t.$root.currentTopic == null)) {
+                    t.$root.snackBar.message = 'Por favor escoja un tema.';
+                    t.$root.openSnackBar();
+                    return;
                 };
+
+
+                t.$validator.validateAll().then(() => {
+
+                    t.question.date = Date.now();
+                    t.question.author = t.$root.user.uid;
+                    t.$root.$firebaseRefs.questionList.push(t.question).then(successCallback);
+
+                    function successCallback() {
+                        t.question = {
+                            title: null,
+                            date: null,
+                            author: t.$root.user.uid,
+                            correctAnswer: 'a',
+                            answers: {}
+                        };
+                    };
+                }).catch(() => {
+                    t.$root.snackBar.message = 'Corrige los errores por favor.';
+                    t.$root.openSnackBar();
+                });
 
             }
         }

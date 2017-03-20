@@ -6,7 +6,8 @@ var config = {
 firebase.initializeApp(config);
 
 var db = firebase.database();
-Vue.use(VueMaterial)
+Vue.use(VueMaterial);
+Vue.use(VeeValidate);
 
 Vue.use(VueTimeago, {
     name: 'timeago',
