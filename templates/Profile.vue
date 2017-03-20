@@ -5,7 +5,7 @@
                 <div class="md-title">No has hecho todavía ningún examen</div>
             </md-card-header>
             <md-card-actions>
-                <md-button @click.native="$router.push('submit')">Hacer uno ahora</md-button>
+                <md-button @click.native="$router.push('exam')">Hacer uno ahora</md-button>
             </md-card-actions>
         </md-card>
         <md-table v-else>

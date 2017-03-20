@@ -100,7 +100,7 @@
                     wrong: []
                 },
                 roomCode: null,
-                questionListShuffled: [],
+                questionListShuffled: []
             }
 
         },

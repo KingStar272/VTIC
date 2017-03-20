@@ -287,6 +287,11 @@ Vue.filter('toDate', function (value) {
 });
 
 router.beforeEach((to, from, next) => {
+    if (App.examStatus.inProgress) {
+        App.snackBar.message = 'Por favor termina el examen.';
+        App.openSnackBar();
+        return;
+    }
     App.closeDialog('sidenav');
     App.loading = true;
     next();

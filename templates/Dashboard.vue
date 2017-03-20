@@ -36,7 +36,7 @@
                         <md-divider v-if="letter !== 'd'"></md-divider>
                     </md-list-item>
                 </md-list>
-                <md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author == $root.user.uid">Eliminar</md-button>
+                <!--<md-button @click.native="removeQuestion(item)" class="md-raised md-warn" v-if="item.author == $root.user.uid">Eliminar</md-button>-->
 
             </md-card-content>
         </md-card>
