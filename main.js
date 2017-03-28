@@ -161,8 +161,8 @@ var App = new Vue({
         levels: function () {
             if (this.levels.length !== 0) {
                 if (localStorage.currentTopic) {
-                    this.currentLevel = localStorage.getItem('currentLevel');
-                    this.currentTopic = localStorage.getItem('currentTopic');
+                    this.currentLevel = Number(localStorage.getItem('currentLevel'));
+                    this.currentTopic = Number(localStorage.getItem('currentTopic'));
                 } else {
                     this.currentLevel = 0;
                     this.currentTopic = this.levels[0].topics[0].slug;
@@ -195,6 +195,7 @@ var App = new Vue({
             };
         }
     },
+
     methods: {
         getUserInfo: function (uid) {
             return this.$root.userList[uid]
