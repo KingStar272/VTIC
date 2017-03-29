@@ -1,64 +1,72 @@
 <template>
+
     <form v-on:submit.prevent>
-        <md-input-container :class="{ 'md-input-invalid': errors.has('title') }">
-            <label>Pregunta</label>
-            <md-input v-model="question.title" data-vv-name="title" v-validate data-vv-rules="required"></md-input>
-            <span class="md-error">{{errors.first('title')}}</span>
-        </md-input-container>
+        <md-card>
+            <md-card-header>
+                <md-avatar>
+                    <img :src="$root.user.avatar" alt="People">
+                </md-avatar>
 
-        <md-layout md-row :md-gutter="40">
-            <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container :class="{ 'md-input-invalid': errors.has('answerA') }">
-                    <label>Repuesta A</label>
-                    <md-input v-model="question.answers.a" data-vv-name="answerA" v-validate data-vv-rules="required"></md-input>
-                    <span class="md-error">{{errors.first('answerA')}}</span>
-                </md-input-container>
-            </md-layout>
+                <div class="md-title">{{ $root.user.name }}</div>
+                <div class="md-subhead">{{ $root.currentLevelName }} / {{ $root.currentTopicName }}</div>
+            </md-card-header>
 
-            <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container :class="{ 'md-input-invalid': errors.has('answerB') }">
-                    <label>Respuesta B</label>
-                    <md-input v-model="question.answers.b" data-vv-name="answerB" v-validate data-vv-rules="required"></md-input>
-                    <span class="md-error">{{errors.first('answerB')}}</span>
+            <md-card-content>
+                <md-input-container :class="{ 'md-input-invalid': errors.has('title') }">
+                    <label>Pregunta</label>
+                    <md-input v-model="question.title" data-vv-name="title" v-validate data-vv-rules="required"></md-input>
+                    <span class="md-error">{{errors.first('title')}}</span>
                 </md-input-container>
-            </md-layout>
-        </md-layout>
+                <md-layout md-row>
+                    <md-layout>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerA') }">
+                            <label>Repuesta A</label>
+                            <md-input v-model="question.answers.a" data-vv-name="answerA" v-validate data-vv-rules="required"></md-input>
+                            <span class="md-error">{{errors.first('answerA')}}</span>
+                        </md-input-container>
+                    </md-layout>
+                    <md-radio v-model="question.correctAnswer" md-value="a"></md-radio>
+                </md-layout>
+                <md-layout md-row>
+                    <md-layout>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerB') }">
+                            <label>Respuesta B</label>
+                            <md-input v-model="question.answers.b" data-vv-name="answerB" v-validate data-vv-rules="required"></md-input>
+                            <span class="md-error">{{errors.first('answerB')}}</span>
+                        </md-input-container>
+                    </md-layout>
+                    <md-radio v-model="question.correctAnswer" md-value="b"></md-radio>
 
-        <md-layout md-row :md-gutter="40">
-            <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container :class="{ 'md-input-invalid': errors.has('answerC') }">
-                    <label>Respuesta C</label>
-                    <md-input v-model="question.answers.c" data-vv-name="answerC" v-validate data-vv-rules="required"></md-input>
-                    <span class="md-error">{{errors.first('answerC')}}</span>
-                </md-input-container>
-            </md-layout>
+                </md-layout>
 
-            <md-layout md-flex-xsmall="100" md-flex-medium="50">
-                <md-input-container :class="{ 'md-input-invalid': errors.has('answerD') }">
-                    <label>Respuesta D</label>
-                    <md-input v-model="question.answers.d" data-vv-name="answerD" v-validate data-vv-rules="required"></md-input>
-                    <span class="md-error">{{errors.first('answerD')}}</span>
-                </md-input-container>
-            </md-layout>
-        </md-layout>
-        
-        <md-layout md-gutter md-theme="default">
-            <md-layout md-flex-xsmall="25%">
-                <md-radio v-model="question.correctAnswer" md-value="a">A</md-radio>
-            </md-layout>
-            <md-layout md-flex-xsmall="25%">
-                <md-radio v-model="question.correctAnswer" md-value="b">B</md-radio>
-            </md-layout>
-            <md-layout md-flex-xsmall="25%">
-                <md-radio v-model="question.correctAnswer" md-value="c">C</md-radio>
-            </md-layout>
-            <md-layout md-flex-xsmall="25%">
-                <md-radio v-model="question.correctAnswer" md-value="d">D</md-radio>
-            </md-layout>
-        </md-layout>
-        <md-button class="md-raised md-primary fullWidth" @click.native="addQuestion()" type="submit">
-            Enviar
-        </md-button>
+                <md-layout md-row>
+                    <md-layout>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerC') }">
+                            <label>Respuesta C</label>
+                            <md-input v-model="question.answers.c" data-vv-name="answerC" v-validate data-vv-rules="required"></md-input>
+                            <span class="md-error">{{errors.first('answerC')}}</span>
+                        </md-input-container>
+                    </md-layout>
+                    <md-radio v-model="question.correctAnswer" md-value="c"></md-radio>
+
+                </md-layout>
+                <md-layout md-row>
+                    <md-layout>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerD') }">
+                            <label>Respuesta D</label>
+                            <md-input v-model="question.answers.d" data-vv-name="answerD" v-validate data-vv-rules="required"></md-input>
+                            <span class="md-error">{{errors.first('answerD')}}</span>
+                        </md-input-container>
+                    </md-layout>
+                    <md-radio v-model="question.correctAnswer" md-value="d"></md-radio>
+
+                </md-layout>
+            </md-card-content>
+
+            <md-card-actions>
+                <md-button class="md-primary" @click.native="addQuestion()">Enviar</md-button>
+            </md-card-actions>
+        </md-card>
     </form>
 </template>
 
