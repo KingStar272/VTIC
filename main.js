@@ -60,6 +60,11 @@ const router = new VueRouter({
             component: httpVueLoader('templates/Profile.vue'),
             name: 'Perfil'
         },
+        {
+            path: '/settings',
+            component: httpVueLoader('templates/Setting.vue'),
+            name: 'Configuración'
+        }
     ]
 });
 
@@ -153,6 +158,10 @@ var App = new Vue({
         examStatus: {
             inProgress: false,
             result: false
+        },
+
+        settings: {
+            delete: false
         }
 
     },
