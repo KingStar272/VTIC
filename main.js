@@ -311,8 +311,8 @@ Vue.filter('toDate', function (value) {
 });
 
 router.beforeEach((to, from, next) => {
-    if (App.examStatus.inProgress) {
-        App.snackBar.message = 'Por favor termina el examen.';
+    if (App.examStatus.inProgress || App.examStatus.result) {
+        App.snackBar.message = 'Por favor termina primero el examen.';
         App.openSnackBar();
         return;
     }
