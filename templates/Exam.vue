@@ -1,50 +1,40 @@
 <template>
     <div>
         <div v-if="!$root.examStatus.inProgress && !questionListShuffled.length">
-            <transition name="slide-fade">
-                <div v-if="!oficialExam">
-                    <md-card class="md-accent" v-if="!$root.questionList.length && $root.currentTopic !== null">
-                        <md-card-header>
-                            <div class="md-title">No hay preguntas bajo el tema de {{ $root.currentTopicName }}</div>
-                        </md-card-header>
-                        <md-card-content>
-                            Elige otro tema con preguntas para poder comenzar el examen.
-                        </md-card-content>
-                        <md-card-actions>
-                            <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
-                        </md-card-actions>
-                    </md-card>
+            <md-card class="md-accent" v-if="!$root.questionList.length && $root.currentTopic !== null">
+                <md-card-header>
+                    <div class="md-title">No hay preguntas bajo el tema de {{ $root.currentTopicName }}</div>
+                </md-card-header>
+                <md-card-content>
+                    Elige otro tema con preguntas para poder comenzar el examen.
+                </md-card-content>
+                <md-card-actions>
+                    <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
+                </md-card-actions>
+            </md-card>
 
-                    <md-card v-else>
-                        <md-card-header>
-                            <div class="md-title">Examinar</div>
-                            <div class="md-subhead">{{ $root.currentTopicName }} - {{ $root.currentLevelName }}</div>
-                        </md-card-header>
+            <md-card v-else>
+                <md-card-header>
+                    <div class="md-title">Examinar</div>
+                    <div class="md-subhead">{{ $root.currentTopicName }} - {{ $root.currentLevelName }}</div>
+                </md-card-header>
 
-                        <md-card-content>
-                            <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
-                                <label>Número de preguntas</label>
-                                <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
-                                <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
-                            </md-input-container>
-                        </md-card-content>
+                <md-card-content>
+                    <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
+                        <label>Número de preguntas</label>
+                        <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
+                        <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
+                    </md-input-container>
+                </md-card-content>
 
-                        <md-card-actions>
-                            <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
-                            <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
-                        </md-card-actions>
-                    </md-card>
-                </div>
-            </transition>
+                <md-card-actions>
+                    <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
+                    <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
+                </md-card-actions>
+            </md-card>
 
-            <md-switch v-model="oficialExam">Examen oficial</md-switch>
+            <md-switch v-model="oficialExam">Guardar el examen</md-switch>
 
-            <md-layout md-gutter md-theme="default" v-if="oficialExam">
-                <md-input-container>
-                    <label>Código de acceso</label>
-                    <md-input type="number" v-model="roomCode" v-on:input.native="joinRoom"></md-input>
-                </md-input-container>
-            </md-layout>
         </div>
 
         <div v-if="$root.examStatus.inProgress">
@@ -148,28 +138,6 @@
             }
         },
         methods: {
-            joinRoom: function () {
-                var ref = db.ref('/room/'),
-                    t = this,
-                    code = this.roomCode;
-
-                ref.child(code).once('value', function (snapshot) {
-                    var exists = (snapshot.val() !== null);
-                    console.log(snapshot.val())
-                    ExistCallback(code, exists);
-                });
-
-                function ExistCallback(code, exists) {
-                    if (exists) {
-                        t.snackBar.message = 'Entrando...';
-                        t.openSnackBar();
-
-                    } else {
-                        t.snackBar.message = 'El código no es válido';
-                        t.openSnackBar();
-                    }
-                }
-            },
             exitTest: function () {
                 this.$root.examStatus = {
                     inProgress: false,
@@ -179,12 +147,12 @@
             },
             checkAnswers: function () {
                 var t = this;
-                this.exam = {
+                t.exam = {
                     grade: 0,
                     correct: [],
                     wrong: []
                 };
-                this.$root.examStatus = {
+                t.$root.examStatus = {
                     inProgress: false,
                     result: true
                 }
@@ -209,12 +177,14 @@
 
                 window.scrollTo(0, 0);
 
-                var data = this.exam;
+                if (t.oficialExam) {
+                    var data = t.exam;
 
-                data['date'] = Date.now();
-                data['topic'] = this.$root.currentTopicName;
-                data['level'] = this.$root.currentLevelName;
-                this.$root.$firebaseRefs.user.child('exams').push(data);
+                    data['date'] = Date.now();
+                    data['topic'] = t.$root.currentTopicName;
+                    data['level'] = t.$root.currentLevelName;
+                    t.$root.$firebaseRefs.user.child('exams').push(data);
+                };
             },
             shuffleQuestion: function () {
                 var t = this;
