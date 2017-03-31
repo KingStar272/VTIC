@@ -116,23 +116,23 @@
                     numeric: true,
                     min_value: 1,
                     max_value: this.questionListLength
-                }
+                },
+
+                numberOfQuestions: 10
             }
 
         },
         watch: {
             questionListLength: function () {
                 this.rule.max_value = this.questionListLength
+                if (this.questionListLength > 10) {
+                    this.numberOfQuestions = 10
+                } else {
+                     this.numberOfQuestions = this.questionListLength
+                }
             }
         },
         computed: {
-            numberOfQuestions: function () {
-                if (this.questionListLength > 10) {
-                    return 10
-                } else {
-                    return this.questionListLength
-                }
-            },
             questionListLength: function () {
                 return this.$root.questionList.length;
             },
