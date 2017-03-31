@@ -14,8 +14,8 @@
                     <md-table-head>Fecha</md-table-head>
                     <md-table-head>Tema</md-table-head>
                     <md-table-head md-numeric>Nota</md-table-head>
-                    <md-table-head md-numeric>Acertados</md-table-head>
-                    <md-table-head md-numeric>Equivocados</md-table-head>
+                    <md-table-head md-numeric>Correcto(s)</md-table-head>
+                    <md-table-head md-numeric>Incorrecto(s)</md-table-head>
                 </md-table-row>
             </md-table-header>
 
