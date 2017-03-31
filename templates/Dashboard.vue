@@ -17,8 +17,11 @@
                 </md-avatar>
 
                 <div class="md-title">{{ $root.getUserInfo(item.author).name }}</div>
-                <div class="md-subhead" :title="item.date | toDate">
-                    <timeago :auto-update="60" :since="item.date"></timeago>
+                <div class="md-subhead">
+                    <span>
+                        <timeago :auto-update="60" :since="item.date"></timeago>
+                        <md-tooltip md-direction="bottom">{{ item.date | toDate }}</md-tooltip>
+                    </span>
                 </div>
             </md-card-header>
             <md-card-content>
