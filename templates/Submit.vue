@@ -19,7 +19,7 @@
                 </md-input-container>
 
 
-                <md-layout md-row v-for="(value, letter, index) in question.answers">
+                <md-layout md-row v-for="(value, letter, index) in question.answers" :key="index"> 
                     <md-layout>
                         <md-input-container :class="{ 'md-input-invalid': errors.has(letter) }">
                             <label>Repuesta {{letter.toUpperCase()}}</label>
