@@ -17,50 +17,19 @@
                     <md-input v-model="question.title" data-vv-name="title" v-validate data-vv-rules="required"></md-input>
                     <span class="md-error">{{errors.first('title')}}</span>
                 </md-input-container>
-                <md-layout md-row>
+
+
+                <md-layout md-row v-for="(value, letter, index) in question.answers">
                     <md-layout>
-                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerA') }">
-                            <label>Repuesta A</label>
-                            <md-input v-model="question.answers.a" data-vv-name="answerA" v-validate data-vv-rules="required"></md-input>
-                            <span class="md-error">{{errors.first('answerA')}}</span>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has(letter) }">
+                            <label>Repuesta {{letter.toUpperCase()}}</label>
+                            <md-input v-model="question.answers[letter]" :data-vv-name="letter" v-validate data-vv-rules="required"></md-input>
+                            <span class="md-error">{{errors.first(letter)}}</span>
                         </md-input-container>
                     </md-layout>
-                    <md-radio v-model="question.correctAnswer" md-value="a"></md-radio>
-                </md-layout>
-                <md-layout md-row>
-                    <md-layout>
-                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerB') }">
-                            <label>Respuesta B</label>
-                            <md-input v-model="question.answers.b" data-vv-name="answerB" v-validate data-vv-rules="required"></md-input>
-                            <span class="md-error">{{errors.first('answerB')}}</span>
-                        </md-input-container>
-                    </md-layout>
-                    <md-radio v-model="question.correctAnswer" md-value="b"></md-radio>
-
+                    <md-radio v-model="question.correctAnswer" :md-value="letter"></md-radio>
                 </md-layout>
 
-                <md-layout md-row>
-                    <md-layout>
-                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerC') }">
-                            <label>Respuesta C</label>
-                            <md-input v-model="question.answers.c" data-vv-name="answerC" v-validate data-vv-rules="required"></md-input>
-                            <span class="md-error">{{errors.first('answerC')}}</span>
-                        </md-input-container>
-                    </md-layout>
-                    <md-radio v-model="question.correctAnswer" md-value="c"></md-radio>
-
-                </md-layout>
-                <md-layout md-row>
-                    <md-layout>
-                        <md-input-container :class="{ 'md-input-invalid': errors.has('answerD') }">
-                            <label>Respuesta D</label>
-                            <md-input v-model="question.answers.d" data-vv-name="answerD" v-validate data-vv-rules="required"></md-input>
-                            <span class="md-error">{{errors.first('answerD')}}</span>
-                        </md-input-container>
-                    </md-layout>
-                    <md-radio v-model="question.correctAnswer" md-value="d"></md-radio>
-
-                </md-layout>
             </md-card-content>
 
             <md-card-actions>
@@ -110,7 +79,12 @@
                             date: null,
                             author: t.$root.user.uid,
                             correctAnswer: 'a',
-                            answers: {}
+                            answers: {
+                                a: null,
+                                b: null,
+                                c: null,
+                                d: null
+                            }
                         };
                     };
                 }).catch(() => {
