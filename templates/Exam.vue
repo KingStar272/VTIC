@@ -115,12 +115,15 @@
                     required: true,
                     numeric: true,
                     min_value: 1,
-                    max_value: this.questionListLength
+                    max_value: 0
                 },
 
                 numberOfQuestions: 10
             }
 
+        },
+        created() {
+            this.rule.max_value = this.questionListLength;
         },
         watch: {
             questionListLength: function () {
@@ -128,7 +131,7 @@
                 if (this.questionListLength > 10) {
                     this.numberOfQuestions = 10
                 } else {
-                     this.numberOfQuestions = this.questionListLength
+                    this.numberOfQuestions = this.questionListLength
                 }
             }
         },
@@ -149,6 +152,7 @@
                 var ref = db.ref('/room/'),
                     t = this,
                     code = this.roomCode;
+
                 ref.child(code).once('value', function (snapshot) {
                     var exists = (snapshot.val() !== null);
                     console.log(snapshot.val())
