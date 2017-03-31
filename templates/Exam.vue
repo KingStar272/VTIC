@@ -21,6 +21,14 @@
                             <div class="md-subhead">{{ $root.currentTopicName }} - {{ $root.currentLevelName }}</div>
                         </md-card-header>
 
+                        <md-card-content>
+                            <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
+                                <label>Número de preguntas</label>
+                                <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
+                                <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
+                            </md-input-container>
+                        </md-card-content>
+
                         <md-card-actions>
                             <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
                             <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
@@ -100,11 +108,34 @@
                     wrong: []
                 },
                 roomCode: null,
-                questionListShuffled: []
+
+                questionListShuffled: [],
+
+                rule: {
+                    required: true,
+                    numeric: true,
+                    min_value: 1,
+                    max_value: this.questionListLength
+                }
             }
 
         },
+        watch: {
+            questionListLength: function () {
+                this.rule.max_value = this.questionListLength
+            }
+        },
         computed: {
+            numberOfQuestions: function () {
+                if (this.questionListLength > 10) {
+                    return 10
+                } else {
+                    return this.questionListLength
+                }
+            },
+            questionListLength: function () {
+                return this.$root.questionList.length;
+            },
             examCardClass: function () {
                 return {
                     'md-primary': this.exam.grade >= 8,
@@ -182,28 +213,32 @@
                 this.$root.$firebaseRefs.user.child('exams').push(data);
             },
             shuffleQuestion: function () {
-                var questionListShuffled = this.$root.questionList;
-                this.exam = {
-                    grade: 0,
-                    correct: [],
-                    wrong: []
-                };
+                var t = this;
+                t.$validator.validateAll().then(() => {
+                    var questionListShuffled = this.$root.questionList;
+                    this.exam = {
+                        grade: 0,
+                        correct: [],
+                        wrong: []
+                    };
 
-                this.$root.examStatus = {
-                    inProgress: true,
-                    result: false
-                }
-                questionListShuffled.sort(function () {
-                    return 0.5 - Math.random()
+                    this.$root.examStatus = {
+                        inProgress: true,
+                        result: false
+                    }
+                    questionListShuffled.sort(function () {
+                        return 0.5 - Math.random()
+                    });
+
+                    this.questionListShuffled = questionListShuffled.map(function (el) {
+                        var o = Object.assign({}, el);
+                        o.choosen = 'a';
+                        return o;
+                    }).slice(0, this.numberOfQuestions);
+                }).catch(() => {
+                    t.$root.snackBar.message = 'Corrige los errores por favor.';
+                    t.$root.openSnackBar();
                 });
-
-                this.questionListShuffled = questionListShuffled.map(function (el) {
-                    var o = Object.assign({}, el);
-                    o.choosen = 'a';
-                    return o;
-                }).slice(0, 10);
-
-                console.log(this.questionListShuffled)
             },
             getQuestionByKey: function (k, array) {
                 return array.filter(function (obj) {
