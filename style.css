@@ -100,7 +100,7 @@ button.fullWidth {
 }
 
 #sideNav--bg {
-	background-image: url(https://firebasestorage.googleapis.com/v0/b/vtic-394e0.appspot.com/o/header.jpg?alt=media&token=ee92a312-7310-4862-b4ba-6d7827ca852f);
+	background-image: url(https://source.unsplash.com/category/technology/300x170);
 	background-size: cover;
 	position: absolute;
 	top: 0;
@@ -109,21 +109,21 @@ button.fullWidth {
 	height: 100%;
 }
 
-#sideNav--bg:after{
-    content: "";
-    background: rgba(0, 0, 0, 0.2);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
+#sideNav--bg:after {
+	content: "";
+	background: rgba(0, 0, 0, 0.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
+
 @media (min-width: 1024px) {
-	.md-toolbar-container{
+	.md-toolbar-container {
 		padding-left: 310px;
 	}
-	#main{
+	#main {
 		padding-left: 330px;
 	}
 	.md-left.md-fixed .md-sidenav-content {
