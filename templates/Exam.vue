@@ -177,7 +177,11 @@
                 this.exam = {
                     grade: 0,
                     correct: [],
-                    wrong: []
+                    wrong: [],
+                    date: {
+                        start: null,
+                        end: null
+                    }
                 };
             },
             checkAnswers: function () {
