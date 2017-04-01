@@ -269,36 +269,6 @@ var App = new Vue({
 
 }).$mount('#app')
 
-Vue.filter('toDate', function (value) {
-    var d = new Date(value),
-        yyyy = d.getFullYear(),
-        mm = ('0' + (d.getMonth() + 1)).slice(-2),
-        dd = ('0' + d.getDate()).slice(-2),
-        hh = d.getHours(),
-        h = hh,
-        min = ('0' + d.getMinutes()).slice(-2),
-        ampm = 'AM',
-        s = d.getSeconds(),
-        time;
-
-    if (hh > 12) {
-        h = hh - 12;
-        ampm = 'PM';
-    } else if (hh === 12) {
-        h = 12;
-        ampm = 'PM';
-    } else if (hh == 0) {
-        h = 12;
-    }
-
-    if (s < 10) {
-        s = '0' + s;
-    }
-    time = yyyy + '/' + mm + '/' + dd + ', ' + hh + ':' + min + ':' + s;
-
-    return time;
-});
-
 router.beforeEach((to, from, next) => {
     if (App.examStatus.inProgress || App.examStatus.result) {
         App.snackBar.message = 'Por favor termina primero el examen.';

@@ -12,6 +12,7 @@
             <md-table-header>
                 <md-table-row>
                     <md-table-head>Fecha</md-table-head>
+                    <md-table-head>Tiempo (Minutos)</md-table-head>
                     <md-table-head>Tema</md-table-head>
                     <md-table-head md-numeric>Nota</md-table-head>
                     <md-table-head md-numeric>Correcto(s)</md-table-head>
@@ -22,7 +23,8 @@
             <md-table-body>
                 <md-table-row v-for="item in examList" :key="item.date">
 
-                    <md-table-cell>{{ item.date | toDate }}</md-table-cell>
+                    <md-table-cell>{{ toDate(item.date.end) }}</md-table-cell>
+                    <md-table-cell>{{ timeBetween(item.date.start, item.date.end) }}</md-table-cell>
                     <md-table-cell>{{ item.topic }}</md-table-cell>
                     <md-table-cell md-numeric>{{ item.grade }}</md-table-cell>
                     <md-table-cell md-numeric v-if="item.grade">{{ item.correct.length }}</md-table-cell>
@@ -42,11 +44,19 @@
             }
         },
         methods: {
+            toDate: function (date) {
+                return moment(date).format("MM/DD/YYYY HH:mm")
+            },
             objectToArray: function (obj) {
                 if (obj) {
                     return Object.keys(obj).map(key => obj[key]);
                 }
             },
+            timeBetween: function (start, end) {
+                var from = moment(start),
+                    to = moment(end);
+                return to.diff(from, 'minutes');
+            }
         }
     }
 </script>

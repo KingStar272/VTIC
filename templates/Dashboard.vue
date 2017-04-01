@@ -20,7 +20,7 @@
                 <div class="md-subhead">
                     <span>
                         <timeago :auto-update="60" :since="item.date"></timeago>
-                        <md-tooltip md-direction="bottom">{{ item.date | toDate }}</md-tooltip>
+                        <md-tooltip md-direction="bottom">{{ toDate(item.date) }}</md-tooltip>
                     </span>
                 </div>
             </md-card-header>
@@ -75,7 +75,10 @@
 
                 this.$root.openDialog('confirm')
 
-            }
+            },
+            toDate: function (date) {
+                return moment(date).format("MM/DD/YYYY HH:mm")
+            },
         }
     }
 </script>

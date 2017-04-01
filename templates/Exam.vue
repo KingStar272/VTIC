@@ -113,12 +113,16 @@
             return {
                 officialExam: false,
                 officialExamConfirm: false,
+
                 exam: {
                     grade: 0,
                     correct: [],
-                    wrong: []
+                    wrong: [],
+                    date: {
+                        start: null,
+                        end: null
+                    }
                 },
-                roomCode: null,
 
                 questionListShuffled: [],
 
@@ -170,18 +174,21 @@
                     result: false
                 }
                 this.questionListShuffled = [];
-            },
-            checkAnswers: function () {
-                var t = this;
-                t.exam = {
+                this.exam = {
                     grade: 0,
                     correct: [],
                     wrong: []
                 };
+            },
+            checkAnswers: function () {
+                var t = this;
+
                 t.$root.examStatus = {
                     inProgress: false,
                     result: true
                 };
+
+                t.exam.date.end = Date.now();
                 t.questionListShuffled.forEach(function (entry) {
                     if (entry.choosen == entry.correctAnswer) {
                         t.exam.correct.push({
@@ -206,7 +213,6 @@
                 if (t.officialExam) {
                     var data = t.exam;
 
-                    data['date'] = Date.now();
                     data['topic'] = t.$root.currentTopicName;
                     data['level'] = t.$root.currentLevelName;
                     t.$root.$firebaseRefs.user.child('exams').push(data);
@@ -217,13 +223,8 @@
                 var t = this;
                 t.$validator.validateAll().then(() => {
                     var questionListShuffled = this.$root.questionList;
-                    this.exam = {
-                        grade: 0,
-                        correct: [],
-                        wrong: []
-                    };
 
-                    this.$root.examStatus = {
+                    t.$root.examStatus = {
                         inProgress: true,
                         result: false
                     }
@@ -231,15 +232,18 @@
                         return 0.5 - Math.random()
                     });
 
-                    this.questionListShuffled = questionListShuffled.map(function (el) {
+                    t.questionListShuffled = questionListShuffled.map(function (el) {
                         var o = Object.assign({}, el);
                         o.choosen = 'a';
                         return o;
-                    }).slice(0, this.numberOfQuestions);
+                    }).slice(0, t.numberOfQuestions);
 
-                    if (this.officialExam) {
+                    if (t.officialExam) {
                         t.$root.$firebaseRefs.user.child('onExam').set(true);
-                    }
+                    };
+
+                    t.exam.date.start = Date.now();
+
                 }).catch(() => {
                     t.$root.snackBar.message = 'Corrige los errores por favor.';
                     t.$root.openSnackBar();
