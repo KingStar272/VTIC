@@ -13,13 +13,14 @@
 
             <md-card-content>
                 <md-input-container :class="{ 'md-input-invalid': errors.has('title') }">
+                    <md-icon>title</md-icon>
                     <label>Pregunta</label>
                     <md-input v-model="question.title" data-vv-name="title" v-validate data-vv-rules="required"></md-input>
                     <span class="md-error">{{errors.first('title')}}</span>
                 </md-input-container>
 
 
-                <md-layout md-row v-for="(value, letter, index) in question.answers" :key="index"> 
+                <md-layout md-row v-for="(value, letter, index) in question.answers" :key="index">
                     <md-layout>
                         <md-input-container :class="{ 'md-input-invalid': errors.has(letter) }">
                             <label>Repuesta {{letter.toUpperCase()}}</label>
