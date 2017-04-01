@@ -1,6 +1,6 @@
 <template>
     <div v-if="!$root.examStatus.inProgress">
-        <md-card class="md-primary" v-if="!$root.questionList.length && $root.currentTopic !== null">
+        <md-card class="md-primary" v-if="!$root.questionList.length && $root.settings.currentTopic !== null">
             <md-card-header>
                 <div class="md-title">No hay preguntas bajo el tema de {{ $root.currentTopicName }}.</div>
             </md-card-header>

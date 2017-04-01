@@ -59,9 +59,10 @@
         },
         methods: {
             addQuestion() {
-                var t = this;
+                var t = this,
+                    settings = t.$root.settings;
 
-                if ((t.$root.currentLevel == null) || (t.$root.currentTopic == null)) {
+                if ((settings.currentLevel == null) || (settings.currentTopic == null)) {
                     t.$root.snackBar.message = 'Por favor escoja un tema.';
                     t.$root.openSnackBar();
                     return;

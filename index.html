@@ -40,16 +40,16 @@
                 <md-layout md-row :md-gutter="40">
                     <md-layout md-flex="100">
                         <md-input-container>
-                            <label for="currentLevel">Curso</label>
-                            <md-select v-model="currentLevel">
+                            <label for="settings.currentLevel">Curso</label>
+                            <md-select v-model="settings.currentLevel">
                                 <md-option v-for="(item, index) in levels" v-bind:value="index" :key="index">{{item.name}}</md-option>
                             </md-select>
                         </md-input-container>
                     </md-layout>
                     <md-layout md-flex="100">
                         <md-input-container>
-                            <label for="currentTopic">Tema</label>
-                            <md-select v-model="currentTopic">
+                            <label for="settings.currentTopic">Tema</label>
+                            <md-select v-model="settings.currentTopic">
                                 <md-option v-for="element in topics" v-bind:value="element.slug" :key="element.slug">{{element.name}}</md-option>
                             </md-select>
                         </md-input-container>

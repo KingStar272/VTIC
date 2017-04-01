@@ -130,8 +130,11 @@ var App = new Vue({
         levels: [],
         topics: [],
 
-        currentLevel: null,
-        currentTopic: null,
+        settings: {
+            currentLevel: null,
+            currentTopic: null,
+            delete: false
+        },
 
         currentTopicName: null,
         currentLevelName: null,
@@ -158,10 +161,6 @@ var App = new Vue({
         examStatus: {
             inProgress: false,
             result: false
-        },
-
-        settings: {
-            delete: false
         }
 
     },
@@ -169,11 +168,10 @@ var App = new Vue({
     watch: {
         levels: function () {
             if (this.levels.length !== 0) {
-                if (localStorage.currentTopic) {
-                    this.currentLevel = Number(localStorage.getItem('currentLevel'));
-                    this.currentTopic = Number(localStorage.getItem('currentTopic'));
+                if (localStorage.settings) {
+                    this.settings = JSON.parse(localStorage.getItem('settings'));
                 } else {
-                    this.currentLevel = 0;
+                    this.settings.currentLevel = 0;
                     this.currentTopic = this.levels[0].topics[0].slug;
                     this.openDialog('settings');
                 };
@@ -182,16 +180,15 @@ var App = new Vue({
             }
 
         },
-        currentLevel: function (val) {
+        'settings.currentLevel': function (val) {
             this.loading = true;
-            this.topics = this.levels[this.currentLevel].topics
+            this.topics = this.levels[this.settings.currentLevel].topics
             this.loading = false;
-            this.currentLevelName = this.levels[this.currentLevel].name;
+            this.currentLevelName = this.levels[this.settings.currentLevel].name;
         },
-        currentTopic: function () {
-            var t = this;
-            this.currentTopicName = this.getTopicName(t.currentTopic);
-            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.currentLevel].slug + '/' + this.currentTopic + '/').orderByChild("date"));
+        'settings.currentTopic': function () {
+            this.currentTopicName = this.getTopicName(this.settings.currentTopic);
+            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.settings.currentLevel].slug + '/' + this.settings.currentTopic + '/').orderByChild("date"));
         },
 
         questionList: function () {
@@ -257,12 +254,7 @@ var App = new Vue({
             this.$refs[ref].close();
 
             if (ref == 'settings') {
-
-                localStorage.setItem('currentLevel', this.currentLevel);
-                console.log('Set ' + this.currentLevel + ' as currentLevel in localstorage');
-                localStorage.setItem('currentTopic', this.currentTopic);
-                console.log('Set ' + this.currentTopic + ' as currentTopic in localstorage');
-
+                localStorage.setItem('settings', JSON.stringify(this.settings));
             }
         },
         onConfirm: function () {
@@ -270,12 +262,7 @@ var App = new Vue({
         },
         openSnackBar: function (msg) {
             this.$refs.snackbar.open();
-        },
-
-        topicList: function (level) {
-            this.$bindAsArray('topics', db.ref('level/' + currentLevel.slug));
-            this.loading = false;
-        },
+        }
     }
 
 }).$mount('#app')
