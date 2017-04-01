@@ -33,10 +33,30 @@
                         <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
                     </md-card-actions>
                 </md-card>
-                <md-checkbox v-model="oficialExam" class="md-primary">Guardar el examen</md-checkbox>
+                <md-checkbox v-model="officialExam" class="md-primary">Examen Oficial</md-checkbox>
+
+                <md-dialog ref="officialExamAlert">
+                    <md-dialog-title>Confirmación</md-dialog-title>
+
+                    <md-dialog-content>
+                        <p>El modo del examen oficial es más estricto, y quedará guardado el resultado del examen en el perfil
+                            del usuario.</p>
+                        <p>
+                            <strong>Por favor, no cierres la ventana actual del navegador hasta que el examen se haya finalizado.</strong>
+                        </p>
+                        <md-checkbox v-model="officialExamConfirm">Leído</md-checkbox>
+                    </md-dialog-content>
+
+
+                    <md-dialog-actions>
+                        <md-button class="md-primary" @click.native="closeDialog('officialExamAlert'); oficialExam = false">Salir</md-button>
+                        <md-button class="md-primary md-raised" @click.native="closeDialog('officialExamAlert');shuffleQuestion();" :disabled="!officialExamConfirm">Comenzar el examen</md-button>
+                    </md-dialog-actions>
+                </md-dialog>
+
             </div>
         </div>
-        
+
         <div v-if="$root.examStatus.inProgress">
             <md-card style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled" :key="item['.key']">
                 <md-card-header>
@@ -91,7 +111,8 @@
     module.exports = {
         data() {
             return {
-                oficialExam: false,
+                officialExam: false,
+                officialExamConfirm: false,
                 exam: {
                     grade: 0,
                     correct: [],
@@ -122,6 +143,11 @@
                     this.numberOfQuestions = 10
                 } else {
                     this.numberOfQuestions = this.questionListLength
+                }
+            },
+            officialExam: function () {
+                if (this.officialExam) {
+                    this.openDialog('officialExamAlert')
                 }
             }
         },
@@ -155,7 +181,7 @@
                 t.$root.examStatus = {
                     inProgress: false,
                     result: true
-                }
+                };
                 t.questionListShuffled.forEach(function (entry) {
                     if (entry.choosen == entry.correctAnswer) {
                         t.exam.correct.push({
@@ -177,13 +203,14 @@
 
                 window.scrollTo(0, 0);
 
-                if (t.oficialExam) {
+                if (t.officialExam) {
                     var data = t.exam;
 
                     data['date'] = Date.now();
                     data['topic'] = t.$root.currentTopicName;
                     data['level'] = t.$root.currentLevelName;
                     t.$root.$firebaseRefs.user.child('exams').push(data);
+                    t.$root.$firebaseRefs.user.child('onExam').set(false)
                 };
             },
             shuffleQuestion: function () {
@@ -209,6 +236,10 @@
                         o.choosen = 'a';
                         return o;
                     }).slice(0, this.numberOfQuestions);
+
+                    if (this.officialExam) {
+                        t.$root.$firebaseRefs.user.child('onExam').set(true);
+                    }
                 }).catch(() => {
                     t.$root.snackBar.message = 'Corrige los errores por favor.';
                     t.$root.openSnackBar();
@@ -219,6 +250,13 @@
                     return obj['.key'] == k;
                 });
             },
+
+            openDialog: function (ref) {
+                this.$refs[ref].open();
+            },
+            closeDialog(ref) {
+                this.$refs[ref].close();
+            }
         }
     }
 </script>

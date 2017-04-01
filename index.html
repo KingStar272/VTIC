@@ -68,76 +68,82 @@
         </md-snackbar>
         <transition name="fade">
             <div v-if="loggedIn">
+                <div v-if="user.onExam && !examStatus.inProgress && !examStatus.result" id="examBlock">
+                    <section>
+                        <h2 class="md-headline">Hmmm. Parece ser que estas haciendo un examen</h2>
+                        <p>Por favor termina el examen primero. Si has cerrado la página de forma accidental, contactar al administrador.</p>
+                    </section>
+                </div>
+                <div v-else>
+                    <md-sidenav md-theme="default" ref="sidenav" class="md-left md-fixed" md-swipeable>
+                        <md-toolbar class="md-account-header">
+                            <div id="sideNav--bg"></div>
+                            <md-list class="md-transparent">
+                                <md-list-item class="md-avatar-list">
+                                    <md-avatar class="md-large">
+                                        <img :src="user.avatar" alt="People">
+                                    </md-avatar>
+                                </md-list-item>
 
-                <md-sidenav md-theme="default" ref="sidenav" class="md-left md-fixed" md-swipeable>
-                    <md-toolbar class="md-account-header">
-                        <div id="sideNav--bg"></div>
-                        <md-list class="md-transparent">
-                            <md-list-item class="md-avatar-list">
-                                <md-avatar class="md-large">
-                                    <img :src="user.avatar" alt="People">
-                                </md-avatar>
+                                <md-list-item>
+                                    <div class="md-list-text-container">
+                                        <span>{{ user.name }}</span>
+                                        <span style="color: rgba(255, 255, 255, .87);">{{ user.email }}</span>
+                                    </div>
+                                </md-list-item>
+                            </md-list>
+                        </md-toolbar>
+
+                        <md-list>
+                            <md-list-item>
+                                <router-link exact to="/">
+                                    <md-icon>home</md-icon> <span>Dashboard</span>
+                                </router-link>
+                            </md-list-item>
+                            <md-list-item>
+                                <router-link exact to="/submit">
+                                    <md-icon>send</md-icon> <span>Enviar</span>
+                                </router-link>
+                            </md-list-item>
+                            <md-list-item>
+                                <router-link exact to="/exam">
+                                    <md-icon>assignment</md-icon> <span>Examinar</span>
+                                </router-link>
                             </md-list-item>
 
                             <md-list-item>
-                                <div class="md-list-text-container">
-                                    <span>{{ user.name }}</span>
-                                    <span style="color: rgba(255, 255, 255, .87);">{{ user.email }}</span>
-                                </div>
+                                <router-link exact to="/profile">
+                                    <md-icon>account_circle</md-icon> <span>Perfil</span>
+                                </router-link>
                             </md-list-item>
+
+                            <md-whiteframe md-elevation="2" id="signOutButton">
+                                <md-list-item @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">
+                                    <md-icon>exit_to_app</md-icon> <span>Salir</span>
+                                </md-list-item>
+                            </md-whiteframe>
+
                         </md-list>
-                    </md-toolbar>
+                    </md-sidenav>
+                    <md-whiteframe md-tag="md-toolbar" md-elevation="2">
+                        <div class="md-toolbar-container">
+                            <md-button class="md-icon-button" @click.native="$refs.sidenav.toggle()" v-if="loggedIn" id="menuToggle">
+                                <md-icon>menu</md-icon>
+                            </md-button>
 
-                    <md-list>
-                        <md-list-item>
-                            <router-link exact to="/">
-                                <md-icon>home</md-icon> <span>Dashboard</span>
-                            </router-link>
-                        </md-list-item>
-                        <md-list-item>
-                            <router-link exact to="/submit">
-                                <md-icon>send</md-icon> <span>Enviar</span>
-                            </router-link>
-                        </md-list-item>
-                        <md-list-item>
-                            <router-link exact to="/exam">
-                                <md-icon>assignment</md-icon> <span>Examinar</span>
-                            </router-link>
-                        </md-list-item>
+                            <h2 class="md-title" style="flex: 1">{{ $route.name }}</h2>
 
-                        <md-list-item>
-                            <router-link exact to="/profile">
-                                <md-icon>account_circle</md-icon> <span>Perfil</span>
-                            </router-link>
-                        </md-list-item>
+                            <md-button id="toggleSetting" @click.native="openDialog('settings')">{{ currentLevelName }} / {{ currentTopicName }}</md-button>
+                        </div>
+                    </md-whiteframe>
 
-                        <md-whiteframe md-elevation="2" id="signOutButton">
-                            <md-list-item @click.native="confirm = logOutconfirm; onConfirm = logOut; openDialog('confirm')">
-                                <md-icon>exit_to_app</md-icon> <span>Salir</span>
-                            </md-list-item>
-                        </md-whiteframe>
 
-                    </md-list>
-                </md-sidenav>
-                <md-whiteframe md-tag="md-toolbar" md-elevation="2">
-                    <div class="md-toolbar-container">
-                        <md-button class="md-icon-button" @click.native="$refs.sidenav.toggle()" v-if="loggedIn" id="menuToggle">
-                            <md-icon>menu</md-icon>
-                        </md-button>
-
-                        <h2 class="md-title" style="flex: 1">{{ $route.name }}</h2>
-
-                        <md-button id="toggleSetting" @click.native="openDialog('settings')">{{ currentLevelName }} / {{ currentTopicName }}</md-button>
+                    <div class="container" id="main">
+                        <transition name="fade">
+                            <router-view></router-view>
+                        </transition>
                     </div>
-                </md-whiteframe>
-
-
-                <div class="container" id="main">
-                    <transition name="fade">
-                        <router-view></router-view>
-                     </transition>
                 </div>
-
             </div>
             <div v-else>
                 <md-button id="loginButton" @click.native="login()" class="md-raised md-primary">
@@ -156,7 +162,7 @@
     <script src="https://unpkg.com/http-vue-loader@1.0.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"></script>
     <script src="https://unpkg.com/vee-validate@2.0.0-beta.25"></script>
-     
+
     <script src="main.js"></script>
 
 </body>
