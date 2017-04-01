@@ -1,7 +1,6 @@
 <template>
     <div>
         <div v-if="!$root.examStatus.inProgress && !questionListShuffled.length">
-
             <md-card class="md-accent" v-if="!$root.questionList.length && $root.currentTopic !== null">
                 <md-card-header>
                     <div class="md-title">No hay preguntas bajo el tema de {{ $root.currentTopicName }}</div>
@@ -14,30 +13,30 @@
                 </md-card-actions>
             </md-card>
 
-            <md-card v-else>
-                <md-card-header>
-                    <div class="md-title">Examinar</div>
-                    <div class="md-subhead">{{ $root.currentTopicName }} - {{ $root.currentLevelName }}</div>
-                </md-card-header>
+            <div v-else>
+                <md-card>
+                    <md-card-header>
+                        <div class="md-title">Examinar</div>
+                        <div class="md-subhead">{{ $root.currentTopicName }} - {{ $root.currentLevelName }}</div>
+                    </md-card-header>
 
-                <md-card-content>
-                    <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
-                        <label>Número de preguntas</label>
-                        <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
-                        <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
-                    </md-input-container>
-                </md-card-content>
+                    <md-card-content>
+                        <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
+                            <label>Número de preguntas</label>
+                            <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
+                            <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
+                        </md-input-container>
+                    </md-card-content>
 
-                <md-card-actions>
-                    <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
-                    <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
-                </md-card-actions>
-            </md-card>
-
-            <md-switch v-model="oficialExam">Guardar el examen</md-switch>
-
+                    <md-card-actions>
+                        <md-button @click.native="$root.openDialog('settings')">Cambiar el tema</md-button>
+                        <md-button @click.native="shuffleQuestion()">Comenzar</md-button>
+                    </md-card-actions>
+                </md-card>
+                <md-checkbox v-model="oficialExam" class="md-primary">Guardar el examen</md-checkbox>
+            </div>
         </div>
-
+        
         <div v-if="$root.examStatus.inProgress">
             <md-card style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled" :key="item['.key']">
                 <md-card-header>
@@ -83,9 +82,9 @@
                     </md-card-content>
                 </div>
             </md-card>
+            <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth">Terminar</md-button>
         </div>
-        <md-button @click.native="exitTest()" class="md-raised md-primary fullWidth" v-if="$root.examStatus.result">Terminar</md-button>
-    </div>
+
 </template>
 
 <script>
