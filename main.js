@@ -180,7 +180,13 @@ var App = new Vue({
             }
 
         },
-        'settings.currentLevel': function (val) {
+        'settings': {
+            handler: function (val, oldVal) {
+                localStorage.setItem('settings', JSON.stringify(this.settings));
+            },
+            deep: true
+        },
+        'settings.currentLevel': function () {
             this.loading = true;
             this.topics = this.levels[this.settings.currentLevel].topics
             this.loading = false;
@@ -252,10 +258,6 @@ var App = new Vue({
         },
         closeDialog(ref) {
             this.$refs[ref].close();
-
-            if (ref == 'settings') {
-                localStorage.setItem('settings', JSON.stringify(this.settings));
-            }
         },
         onConfirm: function () {
             this.logOut();
