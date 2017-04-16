@@ -137,7 +137,7 @@ button.fullWidth {
 	}
 
 	.onExam .md-toolbar-container, .onExam #main{
-		padding-left: 0;
+		padding-left: 15px;
 	}
 
 	.onExam .md-left.md-fixed .md-sidenav-content{
