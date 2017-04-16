@@ -191,6 +191,9 @@ var App = new Vue({
             this.topics = this.levels[this.settings.currentLevel].topics
             this.loading = false;
             this.currentLevelName = this.levels[this.settings.currentLevel].name;
+            if (!this.getTopicName(this.settings.currentTopic)) {
+                this.settings.currentTopic = this.topics[0].slug;
+            }
         },
         'settings.currentTopic': function () {
             this.currentTopicName = this.getTopicName(this.settings.currentTopic);
@@ -214,9 +217,15 @@ var App = new Vue({
         },
         getTopicName: function (topic) {
             var t = this;
-            return this.topics.filter(function (obj) {
+            var topic = this.topics.filter(function (obj) {
                 return obj.slug == topic;
-            })[0].name;
+            })[0];
+
+            if (topic) {
+                return topic.name;
+            } else {
+                return false;
+            }
         },
 
         login: function () {
