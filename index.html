@@ -42,7 +42,7 @@
                         <md-input-container>
                             <label for="settings.currentLevel">Curso</label>
                             <md-select v-model="settings.currentLevel">
-                                <md-option v-for="(item, index) in levels" v-bind:value="index" :key="index">{{item.name}}</md-option>
+                                <md-option v-for="(item, index) in levels" v-bind:value="item.slug" :key="item.slug">{{item.name}}</md-option>
                             </md-select>
                         </md-input-container>
                     </md-layout>

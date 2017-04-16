@@ -127,6 +127,8 @@ var App = new Vue({
 
         user: {},
         messages: [],
+
+        level: {},
         levels: [],
         topics: [],
 
@@ -188,16 +190,17 @@ var App = new Vue({
         },
         'settings.currentLevel': function () {
             this.loading = true;
-            this.topics = this.levels[this.settings.currentLevel].topics
+            this.$bindAsObject('level', db.ref('level/' + this.settings.currentLevel));
+            this.topics = this.level.topics;
             this.loading = false;
-            this.currentLevelName = this.levels[this.settings.currentLevel].name;
+            this.currentLevelName = this.level.name;
             if (!this.getTopicName(this.settings.currentTopic)) {
                 this.settings.currentTopic = this.topics[0].slug;
             }
         },
         'settings.currentTopic': function () {
             this.currentTopicName = this.getTopicName(this.settings.currentTopic);
-            this.$bindAsArray('questionList', db.ref('data/' + this.levels[this.settings.currentLevel].slug + '/' + this.settings.currentTopic + '/').orderByChild("date"));
+            this.$bindAsArray('questionList', db.ref('data/' + this.level.slug + '/' + this.settings.currentTopic + '/').orderByChild("date"));
         },
 
         questionList: function () {
