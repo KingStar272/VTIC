@@ -21,11 +21,22 @@
                     </md-card-header>
 
                     <md-card-content>
-                        <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
-                            <label>Número de preguntas</label>
-                            <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
-                            <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
-                        </md-input-container>
+                        <md-layout :md-gutter="8">
+                            <md-layout>
+                                <md-input-container :class="{ 'md-input-invalid': errors.has('numberOfQuestions') }">
+                                    <label>Número de preguntas</label>
+                                    <md-input type="number" data-vv-as="number of questions" v-model="numberOfQuestions" data-vv-name="numberOfQuestions" v-validate="rule"></md-input>
+                                    <span class="md-error">{{errors.first('numberOfQuestions')}}</span>
+                                </md-input-container>
+                            </md-layout>
+                            <md-layout>
+                                <md-input-container :class="{ 'md-input-invalid': errors.has('examTime') }">
+                                    <label>Tiempo</label>
+                                    <md-input type="number" data-vv-as="exam time" v-model="examTimeInput" data-vv-name="examTime" v-validate="'required|numeric|min_value:1|max_value:20'"></md-input>
+                                    <span class="md-error">{{errors.first('examTime')}}</span>
+                                </md-input-container>
+                            </md-layout>
+                        </md-layout>
                     </md-card-content>
 
                     <md-card-actions>
@@ -40,7 +51,9 @@
 
                     <md-dialog-content>
                         <p>El modo del examen oficial es más estricto, y quedará guardado el resultado del examen en el perfil
-                            del usuario.</p>
+                            del usuario.
+                        </p>
+                        El tiempo del examen es 20 minutos, cuando llega el tiempo, se entregará el examen automáticamente.
                         <p>
                             <strong>Por favor, no cierres la ventana actual del navegador hasta que el examen se haya finalizado.</strong>
                         </p>
@@ -60,11 +73,11 @@
         <div v-if="$root.examStatus.inProgress">
             <md-toolbar id="examStatusBar">
                 <div class="container">
-                <h2 class="md-title" style="flex: 1">
-                    <countdown v-on:countdownprogress="onCountdownProgress" v-on:countdownend="onCountdownEnd" :time="examTime" ref="examCountdown">
-                        <template scope="props">Quedan {{ props.minutes }} minutos, {{ props.seconds }} segundos.</template>
-                    </countdown>
-                </h2>
+                    <h2 class="md-title" style="flex: 1">
+                        <countdown v-on:countdownprogress="onCountdownProgress" v-on:countdownend="onCountdownEnd" :time="examTime" ref="examCountdown">
+                            <template scope="props">Quedan {{ props.minutes }} minutos, {{ props.seconds }} segundos.</template>
+                        </countdown>
+                    </h2>
                 </div>
                 <md-progress class="md-accent" :md-progress="examCountdownProgress" id="examCountdownProgress"></md-progress>
             </md-toolbar>
@@ -148,7 +161,7 @@
 
                 examCountdownProgress: 0,
 
-                examTime: 1.5 * 60 * 1000
+                examTimeInput: 20
             }
 
         },
@@ -180,6 +193,9 @@
                     'md-accent': this.exam.grade > 5 && this.exam.grade < 8,
                     'md-warn': this.exam.grade < 5
                 }
+            },
+            examTime() {
+                return this.examTimeInput * 60 * 1000
             }
         },
         methods: {
@@ -189,12 +205,12 @@
 
                 this.examCountdownProgress = current / total * 100;
 
-                if(data.minutes == 1 && !data.seconds){
+                if (data.minutes == 1 && !data.seconds) {
                     this.$root.snackBar.message = 'Queda un minuto de examen.';
                     this.$root.openSnackBar();
                 }
             },
-            onCountdownEnd(){
+            onCountdownEnd() {
                 this.checkAnswers();
             },
             exitTest: function () {
@@ -249,7 +265,8 @@
                     data['topic'] = t.$root.currentTopicName;
                     data['level'] = t.$root.currentLevelName;
                     t.$root.$firebaseRefs.user.child('exams').push(data);
-                    t.$root.$firebaseRefs.user.child('onExam').set(false)
+                    t.$root.$firebaseRefs.user.child('onExam').set(false);
+                    
                 };
             },
             shuffleQuestion: function () {
@@ -273,6 +290,7 @@
 
                     if (t.officialExam) {
                         t.$root.$firebaseRefs.user.child('onExam').set(true);
+                        t.examTimeInput = 20;
                     };
 
                     t.exam.date.start = Date.now();
@@ -313,6 +331,4 @@
         z-index: 2;
         left: 0;
     }
-
-
 </style>
