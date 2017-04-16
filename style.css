@@ -135,6 +135,16 @@ button.fullWidth {
 	#menuToggle {
 		display: none;
 	}
+
+	.onExam .md-toolbar-container, .onExam #main{
+		padding-left: 0;
+	}
+
+	.onExam .md-left.md-fixed .md-sidenav-content{
+		left: 0;
+    	transform: translate3D(-100%,0,0);
+	}
+
 }
 
 #signOutButton {

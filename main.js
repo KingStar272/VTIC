@@ -8,6 +8,7 @@ firebase.initializeApp(config);
 var db = firebase.database();
 Vue.use(VueMaterial);
 Vue.use(VeeValidate);
+Vue.use(VueCountdown);
 
 Vue.use(VueTimeago, {
     name: 'timeago',

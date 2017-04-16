@@ -58,6 +58,17 @@
         </div>
 
         <div v-if="$root.examStatus.inProgress">
+            <md-toolbar id="examStatusBar">
+                <div class="container">
+                <h2 class="md-title" style="flex: 1">
+                    <countdown v-on:countdownprogress="onCountdownProgress" v-on:countdownend="onCountdownEnd" :time="examTime" ref="examCountdown">
+                        <template scope="props">Quedan {{ props.minutes }} minutos, {{ props.seconds }} segundos.</template>
+                    </countdown>
+                </h2>
+                </div>
+                <md-progress class="md-accent" :md-progress="examCountdownProgress" id="examCountdownProgress"></md-progress>
+            </md-toolbar>
+
             <md-card style="margin-bottom: 1em;" v-for="(item, i) in questionListShuffled" :key="item['.key']">
                 <md-card-header>
                     <h2 class="md-title">{{ item.title }}</h2>
@@ -133,7 +144,11 @@
                     max_value: 0
                 },
 
-                numberOfQuestions: 10
+                numberOfQuestions: 10,
+
+                examCountdownProgress: 0,
+
+                examTime: 1.5 * 60 * 1000
             }
 
         },
@@ -168,6 +183,20 @@
             }
         },
         methods: {
+            onCountdownProgress(data) {
+                var total = this.examTime / 1000,
+                    current = data.minutes * 60 + data.seconds;
+
+                this.examCountdownProgress = current / total * 100;
+
+                if(data.minutes == 1 && !data.seconds){
+                    this.$root.snackBar.message = 'Queda un minuto de examen.';
+                    this.$root.openSnackBar();
+                }
+            },
+            onCountdownEnd(){
+                this.checkAnswers();
+            },
             exitTest: function () {
                 this.$root.examStatus = {
                     inProgress: false,
@@ -268,3 +297,22 @@
         }
     }
 </script>
+
+<style>
+    #examCountdownProgress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+    
+    #examStatusBar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 2;
+        left: 0;
+    }
+
+
+</style>

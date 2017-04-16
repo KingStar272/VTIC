@@ -13,7 +13,7 @@
 </head>
 
 <body class="md-theme-background">
-    <div id="app">
+    <div id="app" :class="{ onExam: examStatus.inProgress }">
         <transition name="fade">
             <div id="fullscreen-loader" v-if="fullscreenLoading">
                 <md-spinner :md-size="150" :md-stroke="1" md-indeterminate></md-spinner>
@@ -164,6 +164,7 @@
     <script src="https://unpkg.com/vee-validate@2.0.0-beta.25"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
+    <script src="assets/js/vue-countdown.min.js"></script>
     <script src="main.js"></script>
 
 </body>
