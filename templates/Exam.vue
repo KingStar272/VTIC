@@ -266,7 +266,7 @@
                     data['level'] = t.$root.currentLevelName;
                     t.$root.$firebaseRefs.user.child('exams').push(data);
                     t.$root.$firebaseRefs.user.child('onExam').set(false);
-                    
+
                 };
             },
             shuffleQuestion: function () {
@@ -274,10 +274,16 @@
                 t.$validator.validateAll().then(() => {
                     var questionListShuffled = this.$root.questionList;
 
+                    if (t.officialExam) {
+                        t.$root.$firebaseRefs.user.child('onExam').set(true);
+                        t.examTimeInput = 20;
+                        t.numberOfQuestions = 10;
+                    };
+
                     t.$root.examStatus = {
                         inProgress: true,
                         result: false
-                    }
+                    };
                     questionListShuffled.sort(function () {
                         return 0.5 - Math.random()
                     });
@@ -287,11 +293,6 @@
                         o.choosen = 'a';
                         return o;
                     }).slice(0, t.numberOfQuestions);
-
-                    if (t.officialExam) {
-                        t.$root.$firebaseRefs.user.child('onExam').set(true);
-                        t.examTimeInput = 20;
-                    };
 
                     t.exam.date.start = Date.now();
 
