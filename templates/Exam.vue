@@ -272,7 +272,7 @@
             shuffleQuestion: function () {
                 var t = this;
                 t.$validator.validateAll().then(() => {
-                    var questionListShuffled = this.$root.questionList;
+                    var questionListShuffled = this.$root.questionList.slice();
 
                     if (t.officialExam) {
                         t.$root.$firebaseRefs.user.child('onExam').set(true);
